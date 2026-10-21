@@ -57,14 +57,28 @@ public class PlaylistStore {
         if (src.isEmpty()) throw new IOException("Sorgente lista non impostata");
         InputStream in;
         if (src.startsWith("http://") || src.startsWith("https://")) {
-            HttpURLConnection c = (HttpURLConnection) new URL(src).openConnection();
-            c.setConnectTimeout(15000);
-            c.setReadTimeout(30000);
-            c.setInstanceFollowRedirects(true);
-            c.setRequestProperty("User-Agent", "Mozilla/5.0 (Linux; Android 5.1.1; AFTT) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/70.0.3538.110 Safari/537.36");
-            c.setRequestProperty("Accept", "*/*");
-            int code = c.getResponseCode();
-            if (code != 200) throw new IOException("HTTP " + code);
+            String url = src;
+            HttpURLConnection c = null;
+            for (int hop = 0; hop < 6; hop++) {
+                c = (HttpURLConnection) new URL(url).openConnection();
+                c.setConnectTimeout(15000);
+                c.setReadTimeout(30000);
+                c.setInstanceFollowRedirects(false);
+                c.setRequestProperty("User-Agent", "Mozilla/5.0 (Linux; Android 5.1.1; AFTT) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/70.0.3538.110 Safari/537.36");
+                c.setRequestProperty("Accept", "*/*");
+                int code = c.getResponseCode();
+                if (code == 301 || code == 302 || code == 303 || code == 307 || code == 308) {
+                    String loc = c.getHeaderField("Location");
+                    if (loc == null) throw new IOException("Redirect senza Location");
+                    url = new URL(new URL(url), loc).toString();
+                    c.disconnect();
+                    c = null;
+                    continue;
+                }
+                if (code != 200) throw new IOException("HTTP " + code);
+                break;
+            }
+            if (c == null) throw new IOException("Troppi redirect");
             in = c.getInputStream();
         } else {
             File f = new File(src);
