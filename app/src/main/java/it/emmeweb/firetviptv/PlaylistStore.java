@@ -35,8 +35,10 @@ public class PlaylistStore {
         this.prefs = this.ctx.getSharedPreferences(PREFS, Context.MODE_PRIVATE);
     }
 
-    public String getSource() { return prefs.getString(KEY_SOURCE, ""); }
-    public void setSource(String s) { prefs.edit().putString(KEY_SOURCE, s.trim()).apply(); }
+    public static final String DEFAULT_SOURCE = "https://iptv-org.github.io/iptv/countries/it.m3u";
+
+    public String getSource() { return prefs.getString(KEY_SOURCE, DEFAULT_SOURCE); }
+    public void setSource(String s) { prefs.edit().putString(KEY_SOURCE, s.trim().isEmpty() ? DEFAULT_SOURCE : s.trim()).apply(); }
 
     public String getVpnConfig() { return prefs.getString(KEY_VPN_CONF, ""); }
     public void setVpnConfig(String s) { prefs.edit().putString(KEY_VPN_CONF, s).apply(); }
