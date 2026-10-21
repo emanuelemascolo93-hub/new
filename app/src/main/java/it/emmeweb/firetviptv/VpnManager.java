@@ -37,6 +37,15 @@ public class VpnManager {
         }
     }
 
+    /** Profilo da usare: WARP automatico oppure configurazione personalizzata. Da chiamare in background. */
+    public static String resolveProfile(Context ctx) throws Exception {
+        PlaylistStore store = new PlaylistStore(ctx);
+        if (store.isWarp()) return new WarpRegistrar(ctx).getProfile();
+        String custom = store.getVpnConfig().trim();
+        if (custom.isEmpty()) throw new Exception("Nessuna configurazione WireGuard");
+        return custom;
+    }
+
     /** Da chiamare in background, dopo aver ottenuto il permesso VpnService. */
     public void up(String confText) throws Exception {
         Config config = Config.parse(new ByteArrayInputStream(confText.getBytes(StandardCharsets.UTF_8)));

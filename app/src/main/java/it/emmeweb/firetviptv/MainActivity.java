@@ -67,7 +67,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
         updateVpnStatus();
-        if (!vpnAutoTried && store.isVpnAutostart() && !store.getVpnConfig().trim().isEmpty()
+        if (!vpnAutoTried && store.isVpnAutostart() && (store.isWarp() || !store.getVpnConfig().trim().isEmpty())
                 && !VpnManager.get(this).isUp()) {
             vpnAutoTried = true;
             Intent prep = VpnService.prepare(this);
@@ -80,7 +80,7 @@ public class MainActivity extends AppCompatActivity {
         vpnStatus.setText("VPN: connessione…");
         new Thread(() -> {
             try {
-                VpnManager.get(this).up(store.getVpnConfig());
+                VpnManager.get(this).up(VpnManager.resolveProfile(this));
             } catch (Exception e) {
                 ui.post(() -> toast("Errore VPN: " + e.getMessage()));
             }

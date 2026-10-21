@@ -18,7 +18,7 @@ public class SettingsActivity extends AppCompatActivity {
 
     private PlaylistStore store;
     private EditText playlistSource, vpnConfig;
-    private CheckBox vpnAutostart;
+    private CheckBox vpnAutostart, vpnWarp;
     private TextView vpnStatus;
     private final Handler ui = new Handler(Looper.getMainLooper());
 
@@ -31,6 +31,8 @@ public class SettingsActivity extends AppCompatActivity {
         playlistSource = findViewById(R.id.playlistSource);
         vpnConfig = findViewById(R.id.vpnConfig);
         vpnAutostart = findViewById(R.id.vpnAutostart);
+        vpnWarp = findViewById(R.id.vpnWarp);
+        vpnWarp.setChecked(store.isWarp());
         vpnStatus = findViewById(R.id.vpnStatus);
 
         playlistSource.setText(store.getSource());
@@ -41,6 +43,8 @@ public class SettingsActivity extends AppCompatActivity {
         Button btnSave = findViewById(R.id.btnSave);
         Button btnConnect = findViewById(R.id.btnVpnConnect);
         Button btnDisconnect = findViewById(R.id.btnVpnDisconnect);
+        Button btnWarpReset = findViewById(R.id.btnWarpReset);
+        btnWarpReset.setOnClickListener(v -> { new WarpRegistrar(this).reset(); toast("Profilo WARP azzerato: verrà rigenerato alla prossima connessione"); });
 
         btnSave.setOnClickListener(v -> { save(); toast("Salvato"); });
 
@@ -64,7 +68,7 @@ public class SettingsActivity extends AppCompatActivity {
 
         btnConnect.setOnClickListener(v -> {
             save();
-            if (store.getVpnConfig().trim().isEmpty()) { toast("Configurazione WireGuard vuota"); return; }
+            if (!store.isWarp() && store.getVpnConfig().trim().isEmpty()) { toast("Configurazione WireGuard vuota"); return; }
             Intent prep = VpnService.prepare(this);
             if (prep != null) startActivityForResult(prep, REQ_VPN);
             else connectVpn();
@@ -86,13 +90,14 @@ public class SettingsActivity extends AppCompatActivity {
         store.setSource(playlistSource.getText().toString());
         store.setVpnConfig(vpnConfig.getText().toString());
         store.setVpnAutostart(vpnAutostart.isChecked());
+        store.setWarp(vpnWarp.isChecked());
     }
 
     private void connectVpn() {
         vpnStatus.setText("VPN: connessione…");
         new Thread(() -> {
             try {
-                VpnManager.get(this).up(store.getVpnConfig());
+                VpnManager.get(this).up(VpnManager.resolveProfile(this));
                 ui.post(this::updateVpnStatus);
             } catch (Exception e) {
                 ui.post(() -> { toast("Errore VPN: " + e.getMessage()); updateVpnStatus(); });

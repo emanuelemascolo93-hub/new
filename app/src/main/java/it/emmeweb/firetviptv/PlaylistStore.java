@@ -22,6 +22,7 @@ public class PlaylistStore {
     private static final String KEY_SOURCE = "source";
     private static final String KEY_VPN_CONF = "vpn_conf";
     private static final String KEY_VPN_AUTO = "vpn_auto";
+    private static final String KEY_WARP = "warp";
     private static final String CACHE_FILE = "playlist.m3u";
 
     private static List<Channel> cached;
@@ -40,7 +41,10 @@ public class PlaylistStore {
     public String getVpnConfig() { return prefs.getString(KEY_VPN_CONF, ""); }
     public void setVpnConfig(String s) { prefs.edit().putString(KEY_VPN_CONF, s).apply(); }
 
-    public boolean isVpnAutostart() { return prefs.getBoolean(KEY_VPN_AUTO, false); }
+    public boolean isVpnAutostart() { return prefs.getBoolean(KEY_VPN_AUTO, true); }
+
+    public boolean isWarp() { return prefs.getBoolean(KEY_WARP, true); }
+    public void setWarp(boolean b) { prefs.edit().putBoolean(KEY_WARP, b).apply(); }
     public void setVpnAutostart(boolean b) { prefs.edit().putBoolean(KEY_VPN_AUTO, b).apply(); }
 
     private File cacheFile() { return new File(ctx.getFilesDir(), CACHE_FILE); }

@@ -42,10 +42,18 @@
             android:layout_marginTop="8dp"
             android:text="@string/load_playlist" />
 
+        <CheckBox
+            android:id="@+id/vpnWarp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="28dp"
+            android:text="@string/vpn_warp"
+            android:textColor="#F2F2F2" />
+
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="28dp"
+            android:layout_marginTop="16dp"
             android:text="@string/vpn_config"
             android:textColor="#A0A4B0" />
 
@@ -96,7 +104,15 @@
                 style="@style/TvButton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginEnd="8dp"
                 android:text="@string/vpn_disconnect" />
+
+            <Button
+                android:id="@+id/btnWarpReset"
+                style="@style/TvButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/vpn_warp_reset" />
         </LinearLayout>
 
         <TextView

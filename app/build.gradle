@@ -10,8 +10,8 @@ android {
         applicationId "it.emmeweb.firetviptv"
         minSdk 22
         targetSdk 34
-        versionCode 1
-        versionName "1.0"
+        versionCode 2
+        versionName "1.1"
         ndk {
             // Fire TV Stick 1st gen is 32-bit ARM
             abiFilters 'armeabi-v7a'
