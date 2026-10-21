@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="24dp">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/settings"
+            android:textSize="22sp"
+            android:textStyle="bold"
+            android:textColor="#F2F2F2" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:text="@string/playlist_source"
+            android:textColor="#A0A4B0" />
+
+        <EditText
+            android:id="@+id/playlistSource"
+            style="@style/TvEdit"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="6dp"
+            android:inputType="textUri"
+            android:singleLine="true"
+            android:hint="http://…/lista.m3u" />
+
+        <Button
+            android:id="@+id/btnLoad"
+            style="@style/TvButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:text="@string/load_playlist" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="28dp"
+            android:text="@string/vpn_config"
+            android:textColor="#A0A4B0" />
+
+        <EditText
+            android:id="@+id/vpnConfig"
+            style="@style/TvEdit"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="6dp"
+            android:inputType="textMultiLine|textNoSuggestions"
+            android:minLines="8"
+            android:gravity="top"
+            android:typeface="monospace"
+            android:hint="[Interface]\nPrivateKey = …\nAddress = …\nDNS = …\n\n[Peer]\nPublicKey = …\nEndpoint = host:port\nAllowedIPs = 0.0.0.0/0" />
+
+        <CheckBox
+            android:id="@+id/vpnAutostart"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:text="@string/vpn_autostart"
+            android:textColor="#F2F2F2" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:orientation="horizontal">
+
+            <Button
+                android:id="@+id/btnSave"
+                style="@style/TvButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="8dp"
+                android:text="@string/save" />
+
+            <Button
+                android:id="@+id/btnVpnConnect"
+                style="@style/TvButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="8dp"
+                android:text="@string/vpn_connect" />
+
+            <Button
+                android:id="@+id/btnVpnDisconnect"
+                style="@style/TvButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/vpn_disconnect" />
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/vpnStatus"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:text="@string/vpn_status_down"
+            android:textColor="#A0A4B0" />
+    </LinearLayout>
+</ScrollView>

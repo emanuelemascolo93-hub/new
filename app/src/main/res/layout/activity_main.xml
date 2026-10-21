@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="24dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center_vertical">
+
+        <TextView
+            android:id="@+id/title"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="@string/app_name"
+            android:textSize="22sp"
+            android:textStyle="bold"
+            android:textColor="#F2F2F2" />
+
+        <TextView
+            android:id="@+id/vpnStatus"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/vpn_status_down"
+            android:textSize="14sp"
+            android:textColor="#A0A4B0"
+            android:layout_marginEnd="16dp" />
+
+        <Button
+            android:id="@+id/btnReload"
+            style="@style/TvButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="8dp"
+            android:text="@string/reload_playlist" />
+
+        <Button
+            android:id="@+id/btnSettings"
+            style="@style/TvButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/settings" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:layout_marginTop="16dp"
+        android:orientation="horizontal">
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/groupList"
+            android:layout_width="220dp"
+            android:layout_height="match_parent"
+            android:layout_marginEnd="16dp"
+            android:background="#13151C"
+            android:padding="4dp" />
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/channelList"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:background="#13151C"
+            android:padding="4dp" />
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/status"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:text="@string/no_playlist"
+        android:textSize="13sp"
+        android:textColor="#A0A4B0" />
+</LinearLayout>

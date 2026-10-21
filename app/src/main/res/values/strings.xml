@@ -1,0 +1,18 @@
+<resources>
+    <string name="app_name">IPTV Player</string>
+    <string name="settings">Impostazioni</string>
+    <string name="playlist_source">Lista M3U (URL http/https oppure percorso file, es. /sdcard/Download/lista.m3u)</string>
+    <string name="load_playlist">Carica lista</string>
+    <string name="reload_playlist">Ricarica lista</string>
+    <string name="vpn_config">Configurazione WireGuard (incolla il contenuto del file .conf)</string>
+    <string name="vpn_connect">Connetti VPN</string>
+    <string name="vpn_disconnect">Disconnetti VPN</string>
+    <string name="vpn_autostart">Avvia VPN all\'apertura dell\'app</string>
+    <string name="save">Salva</string>
+    <string name="vpn_status_down">VPN: non connessa</string>
+    <string name="vpn_status_up">VPN: connessa</string>
+    <string name="no_playlist">Nessuna lista caricata. Premi Menu o vai in Impostazioni.</string>
+    <string name="loading">Caricamento…</string>
+    <string name="all_groups">Tutti</string>
+    <string name="channels_count">%1$d canali</string>
+</resources>

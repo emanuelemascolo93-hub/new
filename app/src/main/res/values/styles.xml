@@ -1,0 +1,30 @@
+<resources>
+    <style name="AppTheme" parent="Theme.AppCompat.NoActionBar">
+        <item name="android:windowBackground">#0E0F14</item>
+        <item name="android:textColorPrimary">#F2F2F2</item>
+        <item name="android:textColorSecondary">#A0A4B0</item>
+        <item name="colorAccent">#FF8A00</item>
+        <item name="colorPrimary">#FF8A00</item>
+        <item name="android:windowFullscreen">true</item>
+    </style>
+
+    <style name="PlayerTheme" parent="AppTheme">
+        <item name="android:windowBackground">#000000</item>
+    </style>
+
+    <style name="TvButton" parent="Widget.AppCompat.Button">
+        <item name="android:background">@drawable/focus_bg</item>
+        <item name="android:textColor">#F2F2F2</item>
+        <item name="android:padding">14dp</item>
+        <item name="android:textSize">16sp</item>
+        <item name="android:focusable">true</item>
+    </style>
+
+    <style name="TvEdit" parent="Widget.AppCompat.EditText">
+        <item name="android:background">@drawable/edit_bg</item>
+        <item name="android:textColor">#F2F2F2</item>
+        <item name="android:textColorHint">#777A85</item>
+        <item name="android:padding">12dp</item>
+        <item name="android:textSize">15sp</item>
+    </style>
+</resources>
