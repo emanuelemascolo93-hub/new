@@ -61,7 +61,8 @@ public class PlaylistStore {
             c.setConnectTimeout(15000);
             c.setReadTimeout(30000);
             c.setInstanceFollowRedirects(true);
-            c.setRequestProperty("User-Agent", "FireTV-IPTV/1.0");
+            c.setRequestProperty("User-Agent", "Mozilla/5.0 (Linux; Android 5.1.1; AFTT) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/70.0.3538.110 Safari/537.36");
+            c.setRequestProperty("Accept", "*/*");
             int code = c.getResponseCode();
             if (code != 200) throw new IOException("HTTP " + code);
             in = c.getInputStream();
