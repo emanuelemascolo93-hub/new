@@ -1,0 +1,125 @@
+To honour the JVM settings for this build a single-use Daemon process will be forked. For more on this, please refer to https://docs.gradle.org/8.7/userguide/gradle_daemon.html#sec:disabling_the_daemon in the Gradle documentation.
+Daemon will be stopped at the end of the build 
+> Task :app:preBuild UP-TO-DATE
+> Task :app:preReleaseBuild UP-TO-DATE
+> Task :app:javaPreCompileRelease
+> Task :app:generateReleaseResValues
+> Task :app:checkReleaseAarMetadata
+> Task :app:mapReleaseSourceSetPaths
+> Task :app:generateReleaseResources
+> Task :app:packageReleaseResources
+> Task :app:mergeReleaseResources
+> Task :app:createReleaseCompatibleScreenManifests
+> Task :app:extractDeepLinksRelease
+> Task :app:parseReleaseLocalResources
+> Task :app:processReleaseMainManifest
+> Task :app:processReleaseManifest
+> Task :app:extractProguardFiles
+> Task :app:mergeReleaseJniLibFolders
+> Task :app:processReleaseManifestForPackage
+> Task :app:mergeReleaseNativeLibs
+
+> Task :app:stripReleaseDebugSymbols
+Unable to strip the following libraries, packaging them as they are: libwg-go.so, libwg-quick.so, libwg.so.
+
+> Task :app:checkReleaseDuplicateClasses
+> Task :app:processReleaseResources
+> Task :app:desugarReleaseFileDependencies
+
+> Task :app:compileReleaseJavaWithJavac
+Note: Some input files use or override a deprecated API.
+Note: Recompile with -Xlint:deprecation for details.
+
+> Task :app:generateReleaseLintVitalReportModel
+> Task :app:extractReleaseNativeSymbolTables
+> Task :app:dexBuilderRelease
+> Task :app:mergeReleaseNativeDebugMetadata NO-SOURCE
+> Task :app:mergeReleaseStartupProfile
+> Task :app:mergeReleaseArtProfile
+> Task :app:mergeReleaseShaders
+> Task :app:compileReleaseShaders NO-SOURCE
+> Task :app:generateReleaseAssets UP-TO-DATE
+> Task :app:mergeReleaseAssets
+> Task :app:compressReleaseAssets
+> Task :app:mergeReleaseGlobalSynthetics
+> Task :app:extractReleaseVersionControlInfo
+> Task :app:processReleaseJavaRes NO-SOURCE
+> Task :app:mergeReleaseJavaResource
+> Task :app:collectReleaseDependencies
+> Task :app:optimizeReleaseResources
+> Task :app:sdkReleaseDependencyData
+> Task :app:validateSigningRelease
+> Task :app:writeReleaseAppMetadata
+> Task :app:writeReleaseSigningConfigVersions
+> Task :warpvpn:preBuild UP-TO-DATE
+> Task :warpvpn:preReleaseBuild UP-TO-DATE
+> Task :warpvpn:javaPreCompileRelease
+> Task :warpvpn:checkReleaseAarMetadata
+> Task :warpvpn:generateReleaseResValues
+> Task :warpvpn:mapReleaseSourceSetPaths
+> Task :warpvpn:generateReleaseResources
+> Task :warpvpn:packageReleaseResources
+> Task :warpvpn:parseReleaseLocalResources
+> Task :warpvpn:createReleaseCompatibleScreenManifests
+> Task :warpvpn:extractDeepLinksRelease
+> Task :warpvpn:processReleaseMainManifest
+> Task :warpvpn:processReleaseManifest
+> Task :warpvpn:processReleaseManifestForPackage
+> Task :warpvpn:extractProguardFiles
+> Task :warpvpn:mergeReleaseJniLibFolders
+> Task :warpvpn:mergeReleaseResources
+> Task :warpvpn:mergeReleaseNativeLibs
+> Task :warpvpn:processReleaseResources
+
+> Task :warpvpn:stripReleaseDebugSymbols
+Unable to strip the following libraries, packaging them as they are: libwg-go.so, libwg-quick.so, libwg.so.
+
+> Task :warpvpn:compileReleaseJavaWithJavac
+Note: Some input files use or override a deprecated API.
+Note: Recompile with -Xlint:deprecation for details.
+
+> Task :warpvpn:generateReleaseLintVitalReportModel
+> Task :warpvpn:extractReleaseNativeSymbolTables
+> Task :warpvpn:mergeReleaseNativeDebugMetadata NO-SOURCE
+> Task :app:mergeExtDexRelease
+> Task :warpvpn:checkReleaseDuplicateClasses
+> Task :warpvpn:dexBuilderRelease
+> Task :warpvpn:desugarReleaseFileDependencies
+> Task :warpvpn:mergeReleaseStartupProfile
+> Task :warpvpn:lintVitalAnalyzeRelease
+> Task :app:lintVitalAnalyzeRelease
+> Task :warpvpn:lintVitalReportRelease
+> Task :warpvpn:lintVitalRelease
+> Task :warpvpn:mergeReleaseArtProfile
+> Task :app:lintVitalReportRelease
+> Task :app:lintVitalRelease
+> Task :warpvpn:mergeReleaseShaders
+> Task :warpvpn:compileReleaseShaders NO-SOURCE
+> Task :warpvpn:generateReleaseAssets UP-TO-DATE
+> Task :warpvpn:mergeReleaseAssets
+> Task :warpvpn:mergeReleaseGlobalSynthetics
+> Task :warpvpn:compressReleaseAssets
+> Task :warpvpn:extractReleaseVersionControlInfo
+> Task :warpvpn:processReleaseJavaRes NO-SOURCE
+> Task :warpvpn:mergeExtDexRelease
+> Task :warpvpn:optimizeReleaseResources
+> Task :warpvpn:collectReleaseDependencies
+> Task :warpvpn:sdkReleaseDependencyData
+> Task :warpvpn:validateSigningRelease
+> Task :warpvpn:writeReleaseAppMetadata
+> Task :warpvpn:writeReleaseSigningConfigVersions
+> Task :warpvpn:mergeReleaseJavaResource
+> Task :app:mergeDexRelease
+> Task :app:compileReleaseArtProfile
+> Task :warpvpn:mergeDexRelease
+> Task :warpvpn:compileReleaseArtProfile
+> Task :app:packageRelease
+> Task :app:createReleaseApkListingFileRedirect
+> Task :app:assembleRelease
+> Task :warpvpn:packageRelease
+> Task :warpvpn:createReleaseApkListingFileRedirect
+> Task :warpvpn:assembleRelease
+gradle/actions: Writing build results to /home/runner/work/_temp/.gradle-actions/build-results/build-1792767563803.json
+
+BUILD SUCCESSFUL in 26s
+92 actionable tasks: 92 executed
