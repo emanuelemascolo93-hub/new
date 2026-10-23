@@ -48,6 +48,14 @@ public class WarpService extends Service {
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         String action = intent != null ? intent.getAction() : ACTION_UP;
+        if (ACTION_BENCH.equals(action)) {
+            cancel = true;
+            try { backend(this).setState(tunnel, Tunnel.State.DOWN, null); } catch (Exception ignored) {}
+            startForeground(1, buildNotification());
+            setState("connecting", "Test endpoint…");
+            new Thread(this::benchmark).start();
+            return START_STICKY;
+        }
         if (ACTION_NEXT.equals(action)) {
             if (!endpoint.isEmpty()) bad.add(endpoint);
             new WarpRegistrar(this).setGoodEndpoint("");
@@ -80,6 +88,76 @@ public class WarpService extends Service {
     private static volatile boolean cancel = false;
 
     public static final String ACTION_NEXT = "it.emmeweb.warpvpn.NEXT";
+    public static final String ACTION_BENCH = "it.emmeweb.warpvpn.BENCH";
+    public static volatile String benchReport = "";
+
+    /** Testa tutti gli endpoint candidati, salva i 5 più veloci e si collega al migliore. */
+    private void benchmark() {
+        cancel = false;
+        WarpRegistrar reg = new WarpRegistrar(this);
+        String base;
+        try { base = reg.getProfile(); }
+        catch (Exception e) { setState("error", "Registrazione WARP: " + e.getMessage()); return; }
+
+        java.util.List<String> eps = reg.benchEndpoints();
+        java.util.List<String[]> results = new java.util.ArrayList<>();
+        int i = 0;
+        for (String ep : eps) {
+            if (cancel) return;
+            i++;
+            benchReport = "Test " + i + "/" + eps.size() + ": " + ep + "\n" + formatRanking(results, 5);
+            setState("connecting", "Test endpoint " + i + "/" + eps.size());
+            if (bringUp(base, ep)) {
+                long ms = quickProbeMs();
+                if (ms >= 0) results.add(new String[]{ep, String.valueOf(ms)});
+            }
+            try { backend(this).setState(tunnel, Tunnel.State.DOWN, null); } catch (Exception ignored) {}
+        }
+        java.util.Collections.sort(results, (a, b) -> Long.compare(Long.parseLong(a[1]), Long.parseLong(b[1])));
+        if (results.isEmpty()) {
+            benchReport = "Nessun endpoint raggiungibile";
+            setState("error", "Nessun endpoint WARP raggiungibile");
+            return;
+        }
+        StringBuilder sb = new StringBuilder();
+        for (int k = 0; k < Math.min(5, results.size()); k++) {
+            if (k > 0) sb.append(',');
+            sb.append(results.get(k)[0]).append('=').append(results.get(k)[1]);
+        }
+        reg.setRanked(sb.toString());
+        reg.setGoodEndpoint(results.get(0)[0]);
+        benchReport = "Classifica (" + results.size() + " funzionanti su " + eps.size() + "):\n" + formatRanking(results, 10);
+        connectWithFallback();
+    }
+
+    private String formatRanking(java.util.List<String[]> results, int max) {
+        java.util.List<String[]> copy = new java.util.ArrayList<>(results);
+        java.util.Collections.sort(copy, (a, b) -> Long.compare(Long.parseLong(a[1]), Long.parseLong(b[1])));
+        StringBuilder sb = new StringBuilder();
+        for (int k = 0; k < Math.min(max, copy.size()); k++)
+            sb.append(k + 1).append(". ").append(copy.get(k)[0]).append("  ").append(copy.get(k)[1]).append(" ms\n");
+        return sb.toString();
+    }
+
+    /** Una sola richiesta con timeout corto: -1 se non passa, altrimenti i ms. */
+    private long quickProbeMs() {
+        long best = -1;
+        for (int i = 0; i < 2; i++) {
+            long t0 = System.currentTimeMillis();
+            try {
+                java.net.HttpURLConnection c = (java.net.HttpURLConnection) new java.net.URL("https://www.cloudflare.com/cdn-cgi/trace").openConnection();
+                c.setConnectTimeout(3000);
+                c.setReadTimeout(3000);
+                c.setRequestProperty("User-Agent", "WarpVPN/1.3");
+                if (c.getResponseCode() == 200) {
+                    java.io.InputStream in = c.getInputStream();
+                    byte[] b = new byte[2048]; int n = in.read(b); in.close();
+                    if (n > 0) { long ms = System.currentTimeMillis() - t0; if (best < 0 || ms < best) best = ms; }
+                }
+            } catch (Exception ignored) { if (best < 0) return -1; }
+        }
+        return best;
+    }
     private static final java.util.Set<String> bad = new java.util.HashSet<>();
 
     private void connectWithFallback() {

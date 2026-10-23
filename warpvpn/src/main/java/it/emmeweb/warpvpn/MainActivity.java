@@ -14,7 +14,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 public class MainActivity extends AppCompatActivity {
     private static final int REQ_VPN = 1;
-    private TextView status, detail;
+    private TextView status, detail, report;
 
     private final BroadcastReceiver stateReceiver = new BroadcastReceiver() {
         @Override public void onReceive(Context c, Intent i) { render(); }
@@ -26,6 +26,8 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         status = findViewById(R.id.status);
         detail = findViewById(R.id.detail);
+        report = findViewById(R.id.report);
+        findViewById(R.id.btnBench).setOnClickListener(v -> startSvc(WarpService.ACTION_BENCH));
 
         findViewById(R.id.btnConnect).setOnClickListener(v -> connect());
         findViewById(R.id.btnDisconnect).setOnClickListener(v -> startSvc(WarpService.ACTION_DOWN));
@@ -78,6 +80,10 @@ public class MainActivity extends AppCompatActivity {
 
     private void render() {
         String s = WarpService.isUp() ? "up" : WarpService.state;
+        String saved = new WarpRegistrar(this).getRanked();
+        if (!WarpService.benchReport.isEmpty()) report.setText(WarpService.benchReport);
+        else if (!saved.isEmpty()) report.setText("Endpoint preferiti (dal test):\n" + saved.replace(",", "\n").replace("=", "  ") + " ms");
+        else report.setText("");
         switch (s) {
             case "up": status.setText(R.string.status_up); detail.setText("Endpoint: " + WarpService.lastError); break;
             case "connecting": status.setText(R.string.status_connecting); detail.setText(WarpService.lastError); break;
