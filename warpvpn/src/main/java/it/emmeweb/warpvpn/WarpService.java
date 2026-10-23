@@ -91,7 +91,7 @@ public class WarpService extends Service {
     public static final String ACTION_BENCH = "it.emmeweb.warpvpn.BENCH";
     public static volatile String benchReport = "";
 
-    /** Testa tutti gli endpoint candidati, salva i 10 più veloci e si collega al migliore. */
+    /** Testa tutti gli endpoint candidati, salva i 50 più veloci e si collega al migliore. */
     private void benchmark() {
         cancel = false;
         WarpRegistrar reg = new WarpRegistrar(this);
@@ -125,7 +125,7 @@ public class WarpService extends Service {
             return;
         }
         StringBuilder sb = new StringBuilder();
-        for (int k = 0; k < Math.min(10, results.size()); k++) {
+        for (int k = 0; k < Math.min(50, results.size()); k++) {
             if (k > 0) sb.append(',');
             sb.append(results.get(k)[0]).append('=').append(results.get(k)[1]);
         }
