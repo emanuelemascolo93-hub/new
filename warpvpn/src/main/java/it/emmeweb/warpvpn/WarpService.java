@@ -101,18 +101,23 @@ public class WarpService extends Service {
 
         java.util.List<String> eps = reg.benchEndpoints();
         java.util.List<String[]> results = new java.util.ArrayList<>();
+        java.util.List<String> allLines = new java.util.ArrayList<>();
         int i = 0;
         for (String ep : eps) {
             if (cancel) return;
             i++;
-            benchReport = "Test " + i + "/" + eps.size() + ": " + ep + "\n\nMigliori finora:\n" + formatRanking(results, 8);
+            benchReport = "Test " + i + "/" + eps.size() + ": " + ep + "\n\nMigliori finora:\n" + formatRanking(results, 10);
             setState("connecting", "Test endpoint " + i + "/" + eps.size());
+            long ms = -1;
             if (bringUp(base, ep)) {
-                long ms = quickProbeMs();
+                ms = quickProbeMs();
                 if (ms >= 0) results.add(new String[]{ep, String.valueOf(ms)});
             }
+            allLines.add(ep + "\t" + (ms >= 0 ? ms + " ms" : "KO"));
+            android.util.Log.i("WarpVPN", "bench " + ep + " -> " + (ms >= 0 ? ms + " ms" : "KO"));
             try { backend(this).setState(tunnel, Tunnel.State.DOWN, null); } catch (Exception ignored) {}
         }
+        saveReportFile(results, allLines, eps.size());
         java.util.Collections.sort(results, (a, b) -> Long.compare(Long.parseLong(a[1]), Long.parseLong(b[1])));
         if (results.isEmpty()) {
             benchReport = "Nessun endpoint raggiungibile";
@@ -126,8 +131,37 @@ public class WarpService extends Service {
         }
         reg.setRanked(sb.toString());
         reg.setGoodEndpoint(results.get(0)[0]);
-        benchReport = "Classifica (" + results.size() + " funzionanti su " + eps.size() + "):\n" + formatRanking(results, 10);
+        benchReport = "Classifica (" + results.size() + " funzionanti su " + eps.size() + ") — file: " + reportPath + "\n" + formatRanking(results, 80);
         connectWithFallback();
+    }
+
+    public static volatile String reportPath = "";
+
+    /** Salva la classifica completa in un file leggibile via adb pull. */
+    private void saveReportFile(java.util.List<String[]> results, java.util.List<String> allLines, int total) {
+        java.util.List<String[]> sorted = new java.util.ArrayList<>(results);
+        java.util.Collections.sort(sorted, (a, b) -> Long.compare(Long.parseLong(a[1]), Long.parseLong(b[1])));
+        StringBuilder sb = new StringBuilder();
+        sb.append("# WarpVPN test endpoint — ").append(new java.util.Date()).append("\n");
+        sb.append("# ").append(results.size()).append(" funzionanti su ").append(total).append("\n\n");
+        sb.append("## CLASSIFICA (dal più veloce)\n");
+        for (int k = 0; k < sorted.size(); k++) sb.append(k + 1).append('\t').append(sorted.get(k)[0]).append('\t').append(sorted.get(k)[1]).append(" ms\n");
+        sb.append("\n## TUTTI (ordine di test)\n");
+        for (String l : allLines) sb.append(l).append('\n');
+        String text = sb.toString();
+        java.io.File[] targets = {
+                new java.io.File(getExternalFilesDir(null), "warp_endpoints.txt"),
+                new java.io.File("/sdcard/Download/warp_endpoints.txt")
+        };
+        for (java.io.File f : targets) {
+            try {
+                if (f.getParentFile() != null) f.getParentFile().mkdirs();
+                java.io.FileOutputStream o = new java.io.FileOutputStream(f);
+                o.write(text.getBytes(StandardCharsets.UTF_8));
+                o.close();
+                reportPath = f.getAbsolutePath();
+            } catch (Exception ignored) {}
+        }
     }
 
     private String formatRanking(java.util.List<String[]> results, int max) {

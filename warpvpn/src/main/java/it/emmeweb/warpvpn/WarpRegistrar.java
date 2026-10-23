@@ -62,6 +62,16 @@ public class WarpRegistrar {
         return ranked;
     }
 
+    /** Solo gli endpoint preferiti salvati dal test (max 50), in ordine di classifica. */
+    public java.util.List<String> rankedEndpoints() {
+        java.util.List<String> ranked = new java.util.ArrayList<>();
+        for (String item : getRanked().split(",")) {
+            int eq = item.indexOf('=');
+            if (eq > 0) ranked.add(item.substring(0, eq));
+        }
+        return ranked;
+    }
+
     /** Endpoint WARP da provare in ordine: prima la classifica del test, poi l'ultimo buono, poi tutti gli altri. */
     public java.util.List<String> endpoints() {
         java.util.List<String> ranked = new java.util.ArrayList<>();
