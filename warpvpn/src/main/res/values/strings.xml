@@ -1,0 +1,10 @@
+<resources>
+    <string name="app_name">WARP VPN</string>
+    <string name="connect">Connetti</string>
+    <string name="disconnect">Disconnetti</string>
+    <string name="reset">Rigenera profilo</string>
+    <string name="status_down">VPN non connessa</string>
+    <string name="status_connecting">Connessione a 1.1.1.1…</string>
+    <string name="status_up">VPN 1.1.1.1 attiva — puoi aprire altre app, resta in funzione</string>
+    <string name="notif_text">VPN 1.1.1.1 attiva</string>
+</resources>

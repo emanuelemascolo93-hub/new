@@ -1,0 +1,48 @@
+plugins {
+    id 'com.android.application'
+}
+
+android {
+    namespace 'it.emmeweb.warpvpn'
+    compileSdk 34
+
+    defaultConfig {
+        applicationId "it.emmeweb.warpvpn"
+        minSdk 22
+        targetSdk 34
+        versionCode 1
+        versionName "1.0"
+        ndk { abiFilters 'armeabi-v7a' }
+    }
+
+    signingConfigs {
+        release {
+            storeFile file("../keystore/release.jks")
+            storePassword "firetv2026"
+            keyAlias "firetviptv"
+            keyPassword "firetv2026"
+        }
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            signingConfig signingConfigs.release
+        }
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
+    }
+
+    packagingOptions {
+        resources { excludes += ['META-INF/*.md', 'META-INF/LICENSE*', 'META-INF/NOTICE*'] }
+    }
+}
+
+dependencies {
+    implementation platform("org.jetbrains.kotlin:kotlin-bom:1.8.22")
+    implementation "androidx.appcompat:appcompat:1.7.0"
+    implementation "com.wireguard.android:tunnel:1.0.20230706"
+}

@@ -39,6 +39,9 @@ jobs:
           if [ -f app/build/outputs/apk/release/app-release.apk ]; then
             cp app/build/outputs/apk/release/app-release.apk out/FireTV-IPTV.apk
           fi
+          if [ -f warpvpn/build/outputs/apk/release/warpvpn-release.apk ]; then
+            cp warpvpn/build/outputs/apk/release/warpvpn-release.apk out/WarpVPN.apk
+          fi
           cd out
           git init -q -b builds
           git config user.name "github-actions"
@@ -50,8 +53,8 @@ jobs:
       - uses: actions/upload-artifact@v4
         if: steps.build.outcome == 'success'
         with:
-          name: FireTV-IPTV
-          path: out/FireTV-IPTV.apk
+          name: APKs
+          path: out/*.apk
 
       - name: Fail if build failed
         if: steps.build.outcome != 'success'
