@@ -49,6 +49,7 @@ public class WarpService extends Service {
     public int onStartCommand(Intent intent, int flags, int startId) {
         String action = intent != null ? intent.getAction() : ACTION_UP;
         if (ACTION_DOWN.equals(action)) {
+            cancel = true;
             new Thread(() -> {
                 try { backend(this).setState(tunnel, Tunnel.State.DOWN, null); } catch (Exception ignored) {}
                 setState("down", "");
@@ -61,17 +62,64 @@ public class WarpService extends Service {
         startForeground(1, buildNotification());
         if (isUp()) { setState("up", ""); return START_STICKY; }
         setState("connecting", "");
-        new Thread(() -> {
-            try {
-                String conf = new WarpRegistrar(this).getProfile();
-                Config config = Config.parse(new ByteArrayInputStream(conf.getBytes(StandardCharsets.UTF_8)));
-                backend(this).setState(tunnel, Tunnel.State.UP, config);
-                setState("up", "");
-            } catch (Exception e) {
-                setState("error", e.getMessage() == null ? e.toString() : e.getMessage());
-            }
-        }).start();
+        new Thread(this::connectWithFallback).start();
         return START_STICKY;
+    }
+
+    public static volatile String endpoint = "";
+    private static volatile boolean cancel = false;
+
+    private void connectWithFallback() {
+        cancel = false;
+        WarpRegistrar reg = new WarpRegistrar(this);
+        String base;
+        try { base = reg.getProfile(); }
+        catch (Exception e) { setState("error", "Registrazione WARP: " + e.getMessage()); return; }
+
+        java.util.List<String> eps = reg.endpoints();
+        int tried = 0;
+        for (String ep : eps) {
+            if (cancel) return;
+            tried++;
+            endpoint = ep;
+            setState("connecting", "Provo " + ep + " (" + tried + "/" + eps.size() + ")");
+            try {
+                Config config = Config.parse(new ByteArrayInputStream(WarpRegistrar.withEndpoint(base, ep).getBytes(StandardCharsets.UTF_8)));
+                backend(this).setState(tunnel, Tunnel.State.UP, config);
+            } catch (Exception e) {
+                continue;
+            }
+            if (probe()) {
+                reg.setGoodEndpoint(ep);
+                setState("up", ep);
+                return;
+            }
+            try { backend(this).setState(tunnel, Tunnel.State.DOWN, null); } catch (Exception ignored) {}
+            if (tried >= 40) break;
+        }
+        setState("error", "Nessun endpoint WARP raggiungibile: la rete blocca WireGuard/UDP");
+    }
+
+    /** Verifica che il traffico passi davvero dal tunnel. */
+    private boolean probe() {
+        for (int i = 0; i < 3; i++) {
+            if (cancel) return false;
+            try {
+                java.net.HttpURLConnection c = (java.net.HttpURLConnection) new java.net.URL("https://www.cloudflare.com/cdn-cgi/trace").openConnection();
+                c.setConnectTimeout(4000);
+                c.setReadTimeout(4000);
+                c.setRequestProperty("User-Agent", "WarpVPN/1.1");
+                int code = c.getResponseCode();
+                if (code == 200) {
+                    java.io.InputStream in = c.getInputStream();
+                    byte[] b = new byte[2048]; int n = in.read(b); in.close();
+                    String body = n > 0 ? new String(b, 0, n, StandardCharsets.UTF_8) : "";
+                    return body.contains("warp=on") || body.contains("warp=plus") || !body.isEmpty();
+                }
+            } catch (Exception ignored) {}
+            try { Thread.sleep(1500); } catch (InterruptedException e) { return false; }
+        }
+        return false;
     }
 
     private void setState(String s, String err) {

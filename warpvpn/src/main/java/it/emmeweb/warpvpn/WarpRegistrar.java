@@ -33,6 +33,25 @@ public class WarpRegistrar {
 
     public boolean hasProfile() { return !prefs.getString(KEY_CONF, "").isEmpty(); }
 
+    private static final String KEY_GOOD = "good_endpoint";
+    public String getGoodEndpoint() { return prefs.getString(KEY_GOOD, ""); }
+    public void setGoodEndpoint(String e) { prefs.edit().putString(KEY_GOOD, e).apply(); }
+
+    /** Endpoint WARP da provare in ordine; quello che ha funzionato l'ultima volta va per primo. */
+    public java.util.List<String> endpoints() {
+        String[] hosts = {"engage.cloudflareclient.com", "162.159.192.1", "162.159.193.1", "162.159.195.1", "188.114.97.1", "188.114.98.1"};
+        int[] ports = {2408, 500, 4500, 1701, 854, 859, 864, 878, 880, 890, 891, 894, 903, 908, 928, 934, 939, 942, 943, 945, 946, 955, 968, 987, 988, 1002, 1010, 1014, 1018, 1070, 1074, 1180, 1387, 1843, 2371, 2506, 3138, 3476, 3581, 3854, 4177, 4198, 4233, 5279, 5956, 7103, 7152, 7156, 7281, 7559, 8319, 8742, 8854, 8886};
+        java.util.List<String> out = new java.util.ArrayList<>();
+        String good = getGoodEndpoint();
+        if (!good.isEmpty()) out.add(good);
+        for (int p : ports) for (String h : hosts) { String e = h + ":" + p; if (!e.equals(good)) out.add(e); }
+        return out;
+    }
+
+    public static String withEndpoint(String profile, String endpoint) {
+        return profile + "Endpoint = " + endpoint + "\nPersistentKeepalive = 25\n";
+    }
+
     public void reset() { prefs.edit().remove(KEY_CONF).apply(); }
 
     /** Restituisce il profilo WireGuard, registrando il dispositivo se necessario. Da chiamare in background. */
@@ -103,7 +122,7 @@ public class WarpRegistrar {
         sb.append("[Peer]\n");
         sb.append("PublicKey = ").append(peerPub).append('\n');
         sb.append("AllowedIPs = 0.0.0.0/0, ::/0\n");
-        sb.append("Endpoint = ").append(endpoint).append('\n');
+        // Endpoint aggiunto a runtime (vedi endpoints())
         return sb.toString();
     }
 }
