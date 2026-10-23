@@ -91,7 +91,7 @@ public class WarpService extends Service {
     public static final String ACTION_BENCH = "it.emmeweb.warpvpn.BENCH";
     public static volatile String benchReport = "";
 
-    /** Testa tutti gli endpoint candidati, salva i 5 più veloci e si collega al migliore. */
+    /** Testa tutti gli endpoint candidati, salva i 10 più veloci e si collega al migliore. */
     private void benchmark() {
         cancel = false;
         WarpRegistrar reg = new WarpRegistrar(this);
@@ -120,7 +120,7 @@ public class WarpService extends Service {
             return;
         }
         StringBuilder sb = new StringBuilder();
-        for (int k = 0; k < Math.min(5, results.size()); k++) {
+        for (int k = 0; k < Math.min(10, results.size()); k++) {
             if (k > 0) sb.append(',');
             sb.append(results.get(k)[0]).append('=').append(results.get(k)[1]);
         }
@@ -167,9 +167,36 @@ public class WarpService extends Service {
         try { base = reg.getProfile(); }
         catch (Exception e) { setState("error", "Registrazione WARP: " + e.getMessage()); return; }
 
-        java.util.List<String> eps = reg.endpoints();
+        java.util.List<String> ranked = reg.rankedEndpoints();
         String bestEp = null; long bestMs = Long.MAX_VALUE; int working = 0, tried = 0;
+
+        // 1) rimisura i preferiti del test e scegli il più veloce adesso
+        java.util.List<String[]> now = new java.util.ArrayList<>();
+        for (String ep : ranked) {
+            if (cancel) return;
+            if (bad.contains(ep)) continue;
+            tried++;
+            endpoint = ep;
+            setState("connecting", "Misuro " + ep + " (" + tried + "/" + ranked.size() + ")" + (bestEp != null ? " — migliore: " + bestEp + " " + bestMs + " ms" : ""));
+            benchReport = "Scelta tra i preferiti:\n" + formatRanking(now, 10);
+            if (!bringUp(base, ep)) continue;
+            long ms = quickProbeMs();
+            if (ms >= 0) { now.add(new String[]{ep, String.valueOf(ms)}); if (ms < bestMs) { bestMs = ms; bestEp = ep; } }
+            try { backend(this).setState(tunnel, Tunnel.State.DOWN, null); } catch (Exception ignored) {}
+        }
+        if (bestEp != null) {
+            benchReport = "Scelta tra i preferiti (adesso):\n" + formatRanking(now, 10);
+            if (!bringUp(base, bestEp)) { setState("error", "Connessione a " + bestEp + " fallita"); return; }
+            endpoint = bestEp;
+            reg.setGoodEndpoint(bestEp);
+            setState("up", bestEp + " (" + bestMs + " ms)");
+            return;
+        }
+
+        // 2) nessun preferito risponde: scansione completa
+        java.util.List<String> eps = reg.endpoints();
         for (String ep : eps) {
+            if (ranked.contains(ep)) continue;
             if (cancel) return;
             if (bad.contains(ep)) continue;
             tried++;
