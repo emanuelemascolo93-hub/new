@@ -2,6 +2,7 @@
     <string name="app_name">WARP VPN</string>
     <string name="connect">Connetti</string>
     <string name="disconnect">Disconnetti</string>
+    <string name="next_endpoint">Cambia endpoint</string>
     <string name="reset">Rigenera profilo</string>
     <string name="status_down">VPN non connessa</string>
     <string name="status_connecting">Connessione a 1.1.1.1…</string>

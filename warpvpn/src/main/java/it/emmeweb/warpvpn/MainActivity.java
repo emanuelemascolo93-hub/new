@@ -29,6 +29,7 @@ public class MainActivity extends AppCompatActivity {
 
         findViewById(R.id.btnConnect).setOnClickListener(v -> connect());
         findViewById(R.id.btnDisconnect).setOnClickListener(v -> startSvc(WarpService.ACTION_DOWN));
+        findViewById(R.id.btnNext).setOnClickListener(v -> startSvc(WarpService.ACTION_NEXT));
         findViewById(R.id.btnReset).setOnClickListener(v -> {
             new WarpRegistrar(this).reset();
             Toast.makeText(this, "Profilo azzerato: riconnetto", Toast.LENGTH_SHORT).show();
@@ -78,7 +79,7 @@ public class MainActivity extends AppCompatActivity {
     private void render() {
         String s = WarpService.isUp() ? "up" : WarpService.state;
         switch (s) {
-            case "up": status.setText(R.string.status_up); detail.setText("Endpoint: " + WarpService.endpoint); break;
+            case "up": status.setText(R.string.status_up); detail.setText("Endpoint: " + WarpService.lastError); break;
             case "connecting": status.setText(R.string.status_connecting); detail.setText(WarpService.lastError); break;
             case "error": status.setText(R.string.status_down); detail.setText("Errore: " + WarpService.lastError); break;
             default: status.setText(R.string.status_down); detail.setText("");
