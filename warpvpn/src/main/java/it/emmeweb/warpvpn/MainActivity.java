@@ -27,7 +27,6 @@ public class MainActivity extends AppCompatActivity {
         status = findViewById(R.id.status);
         detail = findViewById(R.id.detail);
         report = findViewById(R.id.report);
-        findViewById(R.id.btnBench).setOnClickListener(v -> startSvc(WarpService.ACTION_BENCH));
 
         findViewById(R.id.btnConnect).setOnClickListener(v -> connect());
         findViewById(R.id.btnDisconnect).setOnClickListener(v -> startSvc(WarpService.ACTION_DOWN));
@@ -80,18 +79,13 @@ public class MainActivity extends AppCompatActivity {
 
     private void render() {
         String s = WarpService.isUp() ? "up" : WarpService.state;
-        String saved = new WarpRegistrar(this).getRanked();
         if (!WarpService.benchReport.isEmpty()) report.setText(WarpService.benchReport);
-        else if (!saved.isEmpty()) {
-            StringBuilder sb = new StringBuilder("Endpoint preferiti (dal test):\n");
+        else {
+            StringBuilder sb = new StringBuilder("Lista endpoint (ordine di priorità):\n");
             int k = 0;
-            for (String item : saved.split(",")) {
-                int eq = item.indexOf('=');
-                if (eq > 0) sb.append(String.format(java.util.Locale.ITALY, "%2d. %-34s %6s ms\n", ++k, item.substring(0, eq), item.substring(eq + 1)));
-            }
+            for (String e : WarpRegistrar.FIXED) sb.append(String.format(java.util.Locale.ITALY, "%2d. %s\n", ++k, e));
             report.setText(sb.toString());
         }
-        else report.setText("");
         switch (s) {
             case "up": status.setText(R.string.status_up); detail.setText("Endpoint: " + WarpService.lastError); break;
             case "connecting": status.setText(R.string.status_connecting); detail.setText(WarpService.lastError); break;

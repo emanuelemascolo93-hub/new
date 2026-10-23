@@ -65,10 +65,6 @@
             android:layout_width="wrap_content" android:layout_height="wrap_content"
             android:layout_marginEnd="12dp" android:text="@string/next_endpoint" />
 
-        <Button android:id="@+id/btnBench" style="@style/TvButton"
-            android:layout_width="wrap_content" android:layout_height="wrap_content"
-            android:layout_marginEnd="12dp" android:text="@string/bench" />
-
         <Button android:id="@+id/btnReset" style="@style/TvButton"
             android:layout_width="wrap_content" android:layout_height="wrap_content"
             android:text="@string/reset" />

@@ -37,50 +37,62 @@ public class WarpRegistrar {
     public String getGoodEndpoint() { return prefs.getString(KEY_GOOD, ""); }
     public void setGoodEndpoint(String e) { prefs.edit().putString(KEY_GOOD, e).apply(); }
 
-    private static final String KEY_RANKED = "ranked";
-    /** Classifica salvata dal test: "host:porta=ms" separati da virgola. */
-    public String getRanked() { return prefs.getString(KEY_RANKED, ""); }
-    public void setRanked(String r) { prefs.edit().putString(KEY_RANKED, r).apply(); }
+    /** Lista fissa degli endpoint, dal più veloce al più lento (test del 23/10/2026 sulla linea di casa). */
+    public static final String[] FIXED = {
+        "engage.cloudflareclient.com:903",
+        "engage.cloudflareclient.com:928",
+        "162.159.193.1:4500",
+        "162.159.192.1:854",
+        "162.159.195.1:908",
+        "162.159.195.1:942",
+        "162.159.192.1:500",
+        "162.159.192.1:928",
+        "162.159.193.1:878",
+        "162.159.192.1:878",
+        "162.159.192.1:934",
+        "engage.cloudflareclient.com:945",
+        "162.159.192.1:4500",
+        "162.159.193.1:859",
+        "162.159.195.1:4500",
+        "162.159.193.1:945",
+        "162.159.193.1:891",
+        "engage.cloudflareclient.com:864",
+        "engage.cloudflareclient.com:878",
+        "162.159.193.1:2408",
+        "162.159.192.1:2408",
+        "engage.cloudflareclient.com:854",
+        "162.159.193.1:890",
+        "162.159.195.1:903",
+        "engage.cloudflareclient.com:942",
+        "162.159.192.1:945",
+        "162.159.193.1:880",
+        "162.159.195.1:500",
+        "162.159.192.1:891",
+        "162.159.195.1:890",
+        "162.159.195.1:939",
+        "162.159.195.1:945",
+        "162.159.192.1:942",
+        "162.159.193.1:934",
+        "162.159.195.1:880",
+        "162.159.192.1:864",
+        "engage.cloudflareclient.com:500",
+        "162.159.195.1:943",
+        "engage.cloudflareclient.com:4500",
+        "engage.cloudflareclient.com:908",
+        "162.159.192.1:903",
+        "engage.cloudflareclient.com:859",
+        "162.159.192.1:943",
+        "162.159.192.1:894"
+    };
 
-    /** Endpoint candidati per il test di velocità (host principali x porte più comuni). */
-    public java.util.List<String> benchEndpoints() {
-        String[] hosts = {"engage.cloudflareclient.com", "162.159.192.1", "162.159.193.1", "162.159.195.1"};
-        int[] ports = {2408, 500, 4500, 1701, 854, 859, 864, 878, 880, 890, 891, 894, 903, 908, 928, 934, 939, 942, 943, 945};
-        java.util.List<String> out = new java.util.ArrayList<>();
-        for (String h : hosts) for (int p : ports) out.add(h + ":" + p);
-        return out;
-    }
+    public java.util.List<String> rankedEndpoints() { return java.util.Arrays.asList(FIXED); }
 
-    /** Solo gli endpoint preferiti salvati dal test (max 50), in ordine di classifica. */
-    public java.util.List<String> rankedEndpoints() {
-        java.util.List<String> ranked = new java.util.ArrayList<>();
-        for (String item : getRanked().split(",")) {
-            int eq = item.indexOf('=');
-            if (eq > 0) ranked.add(item.substring(0, eq));
-        }
-        return ranked;
-    }
-
-    /** Endpoint WARP da provare in ordine: prima la classifica del test, poi l'ultimo buono, poi tutti gli altri. */
+    /** Scansione completa di riserva (usata solo se tutti i FIXED sono KO). */
     public java.util.List<String> endpoints() {
-        java.util.List<String> ranked = new java.util.ArrayList<>();
-        for (String item : getRanked().split(",")) {
-            int eq = item.indexOf('=');
-            if (eq > 0) ranked.add(item.substring(0, eq));
-        }
-        java.util.List<String> all = allEndpoints();
-        java.util.List<String> out = new java.util.ArrayList<>(ranked);
-        for (String e : all) if (!out.contains(e)) out.add(e);
-        return out;
-    }
-
-    private java.util.List<String> allEndpoints() {
         String[] hosts = {"engage.cloudflareclient.com", "162.159.192.1", "162.159.193.1", "162.159.195.1", "188.114.97.1", "188.114.98.1"};
         int[] ports = {2408, 500, 4500, 1701, 854, 859, 864, 878, 880, 890, 891, 894, 903, 908, 928, 934, 939, 942, 943, 945, 946, 955, 968, 987, 988, 1002, 1010, 1014, 1018, 1070, 1074, 1180, 1387, 1843, 2371, 2506, 3138, 3476, 3581, 3854, 4177, 4198, 4233, 5279, 5956, 7103, 7152, 7156, 7281, 7559, 8319, 8742, 8854, 8886};
-        java.util.List<String> out = new java.util.ArrayList<>();
-        String good = getGoodEndpoint();
-        if (!good.isEmpty()) out.add(good);
-        for (int p : ports) for (String h : hosts) { String e = h + ":" + p; if (!e.equals(good)) out.add(e); }
+        java.util.List<String> out = new java.util.ArrayList<>(rankedEndpoints());
+        for (int p : ports) for (String h : hosts) { String e = h + ":" + p; if (!out.contains(e)) out.add(e); }
         return out;
     }
 

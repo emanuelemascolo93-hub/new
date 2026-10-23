@@ -10,8 +10,8 @@ android {
         applicationId "it.emmeweb.warpvpn"
         minSdk 22
         targetSdk 34
-        versionCode 7
-        versionName "1.6"
+        versionCode 8
+        versionName "2.0"
         ndk { abiFilters 'armeabi-v7a' }
     }
 
