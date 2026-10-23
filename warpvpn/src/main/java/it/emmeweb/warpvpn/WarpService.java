@@ -105,7 +105,7 @@ public class WarpService extends Service {
         for (String ep : eps) {
             if (cancel) return;
             i++;
-            benchReport = "Test " + i + "/" + eps.size() + ": " + ep + "\n" + formatRanking(results, 5);
+            benchReport = "Test " + i + "/" + eps.size() + ": " + ep + "\n\nMigliori finora:\n" + formatRanking(results, 8);
             setState("connecting", "Test endpoint " + i + "/" + eps.size());
             if (bringUp(base, ep)) {
                 long ms = quickProbeMs();
@@ -135,7 +135,7 @@ public class WarpService extends Service {
         java.util.Collections.sort(copy, (a, b) -> Long.compare(Long.parseLong(a[1]), Long.parseLong(b[1])));
         StringBuilder sb = new StringBuilder();
         for (int k = 0; k < Math.min(max, copy.size()); k++)
-            sb.append(k + 1).append(". ").append(copy.get(k)[0]).append("  ").append(copy.get(k)[1]).append(" ms\n");
+            sb.append(String.format(java.util.Locale.ITALY, "%2d. %-34s %6s ms\n", k + 1, copy.get(k)[0], copy.get(k)[1]));
         return sb.toString();
     }
 

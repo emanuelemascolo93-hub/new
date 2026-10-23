@@ -82,7 +82,15 @@ public class MainActivity extends AppCompatActivity {
         String s = WarpService.isUp() ? "up" : WarpService.state;
         String saved = new WarpRegistrar(this).getRanked();
         if (!WarpService.benchReport.isEmpty()) report.setText(WarpService.benchReport);
-        else if (!saved.isEmpty()) report.setText("Endpoint preferiti (dal test):\n" + saved.replace(",", "\n").replace("=", "  ") + " ms");
+        else if (!saved.isEmpty()) {
+            StringBuilder sb = new StringBuilder("Endpoint preferiti (dal test):\n");
+            int k = 0;
+            for (String item : saved.split(",")) {
+                int eq = item.indexOf('=');
+                if (eq > 0) sb.append(String.format(java.util.Locale.ITALY, "%2d. %-34s %6s ms\n", ++k, item.substring(0, eq), item.substring(eq + 1)));
+            }
+            report.setText(sb.toString());
+        }
         else report.setText("");
         switch (s) {
             case "up": status.setText(R.string.status_up); detail.setText("Endpoint: " + WarpService.lastError); break;
