@@ -1,0 +1,182 @@
+To honour the JVM settings for this build a single-use Daemon process will be forked. For more on this, please refer to https://docs.gradle.org/8.7/userguide/gradle_daemon.html#sec:disabling_the_daemon in the Gradle documentation.
+Daemon will be stopped at the end of the build 
+> Task :app:preBuild UP-TO-DATE
+> Task :app:preReleaseBuild UP-TO-DATE
+> Task :app:javaPreCompileRelease
+> Task :app:generateReleaseResValues
+> Task :app:checkReleaseAarMetadata
+> Task :app:mapReleaseSourceSetPaths
+> Task :app:generateReleaseResources
+> Task :app:packageReleaseResources
+> Task :app:mergeReleaseResources
+> Task :app:createReleaseCompatibleScreenManifests
+> Task :app:extractDeepLinksRelease
+> Task :app:parseReleaseLocalResources
+> Task :app:processReleaseMainManifest
+> Task :app:processReleaseManifest
+> Task :app:extractProguardFiles
+> Task :app:mergeReleaseJniLibFolders
+> Task :app:processReleaseManifestForPackage
+> Task :app:mergeReleaseNativeLibs
+> Task :app:checkReleaseDuplicateClasses
+
+> Task :app:stripReleaseDebugSymbols
+Unable to strip the following libraries, packaging them as they are: libwg-go.so, libwg-quick.so, libwg.so.
+
+> Task :app:processReleaseResources
+> Task :app:desugarReleaseFileDependencies
+
+> Task :app:compileReleaseJavaWithJavac
+Note: Some input files use or override a deprecated API.
+Note: Recompile with -Xlint:deprecation for details.
+
+> Task :app:generateReleaseLintVitalReportModel
+> Task :app:extractReleaseNativeSymbolTables
+> Task :app:dexBuilderRelease
+> Task :app:mergeReleaseNativeDebugMetadata NO-SOURCE
+> Task :app:mergeReleaseStartupProfile
+> Task :app:mergeReleaseArtProfile
+> Task :app:mergeReleaseShaders
+> Task :app:compileReleaseShaders NO-SOURCE
+> Task :app:generateReleaseAssets UP-TO-DATE
+> Task :app:mergeReleaseAssets
+> Task :app:compressReleaseAssets
+> Task :app:mergeReleaseGlobalSynthetics
+> Task :app:extractReleaseVersionControlInfo
+> Task :app:processReleaseJavaRes NO-SOURCE
+> Task :app:mergeReleaseJavaResource
+> Task :app:collectReleaseDependencies
+> Task :app:sdkReleaseDependencyData
+> Task :app:optimizeReleaseResources
+> Task :app:validateSigningRelease
+> Task :app:writeReleaseAppMetadata
+> Task :app:writeReleaseSigningConfigVersions
+> Task :tvlauncher:preBuild UP-TO-DATE
+> Task :tvlauncher:preReleaseBuild UP-TO-DATE
+> Task :tvlauncher:javaPreCompileRelease
+> Task :tvlauncher:checkReleaseAarMetadata
+> Task :tvlauncher:generateReleaseResValues
+> Task :tvlauncher:mapReleaseSourceSetPaths
+> Task :tvlauncher:generateReleaseResources
+> Task :tvlauncher:packageReleaseResources
+> Task :tvlauncher:parseReleaseLocalResources
+> Task :tvlauncher:createReleaseCompatibleScreenManifests
+> Task :tvlauncher:extractDeepLinksRelease
+> Task :tvlauncher:mergeReleaseResources
+> Task :tvlauncher:processReleaseMainManifest
+> Task :tvlauncher:processReleaseManifest
+> Task :tvlauncher:extractProguardFiles
+> Task :tvlauncher:mergeReleaseJniLibFolders
+> Task :tvlauncher:mergeReleaseNativeLibs NO-SOURCE
+> Task :tvlauncher:stripReleaseDebugSymbols NO-SOURCE
+> Task :tvlauncher:processReleaseManifestForPackage
+> Task :tvlauncher:extractReleaseNativeSymbolTables NO-SOURCE
+> Task :tvlauncher:mergeReleaseNativeDebugMetadata NO-SOURCE
+> Task :tvlauncher:checkReleaseDuplicateClasses
+> Task :tvlauncher:processReleaseResources
+
+> Task :tvlauncher:compileReleaseJavaWithJavac
+Note: Some input files use or override a deprecated API.
+Note: Recompile with -Xlint:deprecation for details.
+
+> Task :tvlauncher:generateReleaseLintVitalReportModel
+> Task :app:mergeExtDexRelease
+> Task :tvlauncher:dexBuilderRelease
+> Task :tvlauncher:desugarReleaseFileDependencies
+> Task :tvlauncher:mergeReleaseStartupProfile
+> Task :tvlauncher:lintVitalAnalyzeRelease
+> Task :app:lintVitalAnalyzeRelease
+> Task :tvlauncher:lintVitalReportRelease
+> Task :tvlauncher:lintVitalRelease
+> Task :tvlauncher:mergeReleaseArtProfile
+> Task :app:lintVitalReportRelease
+> Task :app:lintVitalRelease
+> Task :tvlauncher:mergeReleaseShaders
+> Task :tvlauncher:compileReleaseShaders NO-SOURCE
+> Task :tvlauncher:generateReleaseAssets UP-TO-DATE
+> Task :tvlauncher:mergeReleaseGlobalSynthetics
+> Task :tvlauncher:mergeReleaseAssets
+> Task :tvlauncher:extractReleaseVersionControlInfo
+> Task :tvlauncher:processReleaseJavaRes NO-SOURCE
+> Task :tvlauncher:compressReleaseAssets
+> Task :app:mergeDexRelease
+> Task :tvlauncher:mergeExtDexRelease
+> Task :tvlauncher:optimizeReleaseResources
+> Task :tvlauncher:collectReleaseDependencies
+> Task :tvlauncher:sdkReleaseDependencyData
+> Task :tvlauncher:validateSigningRelease
+> Task :tvlauncher:writeReleaseAppMetadata
+> Task :tvlauncher:writeReleaseSigningConfigVersions
+> Task :warpvpn:preBuild UP-TO-DATE
+> Task :warpvpn:preReleaseBuild UP-TO-DATE
+> Task :warpvpn:javaPreCompileRelease
+> Task :warpvpn:checkReleaseAarMetadata
+> Task :warpvpn:generateReleaseResValues
+> Task :tvlauncher:mergeReleaseJavaResource
+> Task :warpvpn:mapReleaseSourceSetPaths
+> Task :warpvpn:generateReleaseResources
+> Task :app:compileReleaseArtProfile
+> Task :warpvpn:packageReleaseResources
+> Task :warpvpn:parseReleaseLocalResources
+> Task :warpvpn:createReleaseCompatibleScreenManifests
+> Task :warpvpn:extractDeepLinksRelease
+> Task :warpvpn:processReleaseMainManifest
+> Task :warpvpn:mergeReleaseResources
+> Task :warpvpn:processReleaseManifest
+> Task :warpvpn:extractProguardFiles
+> Task :warpvpn:mergeReleaseJniLibFolders
+> Task :warpvpn:processReleaseManifestForPackage
+> Task :warpvpn:mergeReleaseNativeLibs
+> Task :warpvpn:processReleaseResources
+
+> Task :warpvpn:stripReleaseDebugSymbols
+Unable to strip the following libraries, packaging them as they are: libwg-go.so, libwg-quick.so, libwg.so.
+
+> Task :warpvpn:compileReleaseJavaWithJavac
+Note: Some input files use or override a deprecated API.
+Note: Recompile with -Xlint:deprecation for details.
+
+> Task :warpvpn:generateReleaseLintVitalReportModel
+> Task :warpvpn:extractReleaseNativeSymbolTables
+> Task :app:packageRelease
+> Task :app:createReleaseApkListingFileRedirect
+> Task :app:assembleRelease
+> Task :warpvpn:mergeReleaseNativeDebugMetadata NO-SOURCE
+> Task :warpvpn:checkReleaseDuplicateClasses
+> Task :tvlauncher:mergeDexRelease
+> Task :warpvpn:dexBuilderRelease
+> Task :warpvpn:desugarReleaseFileDependencies
+> Task :warpvpn:mergeReleaseStartupProfile
+> Task :tvlauncher:compileReleaseArtProfile
+> Task :warpvpn:mergeReleaseArtProfile
+> Task :warpvpn:mergeReleaseGlobalSynthetics
+> Task :tvlauncher:packageRelease
+> Task :tvlauncher:createReleaseApkListingFileRedirect
+> Task :tvlauncher:assembleRelease
+> Task :warpvpn:mergeReleaseShaders
+> Task :warpvpn:compileReleaseShaders NO-SOURCE
+> Task :warpvpn:generateReleaseAssets UP-TO-DATE
+> Task :warpvpn:mergeReleaseAssets
+> Task :warpvpn:lintVitalAnalyzeRelease
+> Task :warpvpn:compressReleaseAssets
+> Task :warpvpn:extractReleaseVersionControlInfo
+> Task :warpvpn:processReleaseJavaRes NO-SOURCE
+> Task :warpvpn:lintVitalReportRelease
+> Task :warpvpn:lintVitalRelease
+> Task :warpvpn:collectReleaseDependencies
+> Task :warpvpn:sdkReleaseDependencyData
+> Task :warpvpn:validateSigningRelease
+> Task :warpvpn:writeReleaseAppMetadata
+> Task :warpvpn:writeReleaseSigningConfigVersions
+> Task :warpvpn:optimizeReleaseResources
+> Task :warpvpn:mergeReleaseJavaResource
+> Task :warpvpn:mergeExtDexRelease
+> Task :warpvpn:mergeDexRelease
+> Task :warpvpn:compileReleaseArtProfile
+> Task :warpvpn:packageRelease
+> Task :warpvpn:createReleaseApkListingFileRedirect
+> Task :warpvpn:assembleRelease
+gradle/actions: Writing build results to /home/runner/work/_temp/.gradle-actions/build-results/build-1793315963540.json
+
+BUILD SUCCESSFUL in 33s
+135 actionable tasks: 135 executed
