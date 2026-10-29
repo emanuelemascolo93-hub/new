@@ -4,4 +4,7 @@
     <string name="row_fav">Preferiti</string>
     <string name="row_apps">Tutte le app</string>
     <string name="row_sys">TV</string>
+    <string name="row_sources">Sorgenti</string>
+    <string name="row_cams">Telecamere</string>
+    <string name="row_smart">Smart home</string>
 </resources>

@@ -14,12 +14,27 @@
         android:layout_height="match_parent"
         android:background="@drawable/scrim"/>
 
+    <ImageButton
+        android:id="@+id/gear"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:layout_gravity="top|end"
+        android:layout_marginTop="36dp"
+        android:layout_marginEnd="40dp"
+        android:background="@drawable/tile_bg"
+        android:src="@android:drawable/ic_menu_preferences"
+        android:tint="#FFFFFF"
+        android:scaleType="centerInside"
+        android:contentDescription="Impostazioni"
+        android:focusable="true"/>
+
     <TextView
         android:id="@+id/clock"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="top|end"
-        android:layout_margin="40dp"
+        android:layout_marginTop="36dp"
+        android:layout_marginEnd="100dp"
         android:textColor="#FFFFFF"
         android:textSize="30sp"
         android:shadowColor="#000000" android:shadowRadius="6"/>
@@ -29,8 +44,8 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="top|end"
-        android:layout_marginTop="82dp"
-        android:layout_marginEnd="40dp"
+        android:layout_marginTop="78dp"
+        android:layout_marginEnd="100dp"
         android:textColor="#CCFFFFFF"
         android:textSize="15sp"
         android:shadowColor="#000000" android:shadowRadius="6"/>

@@ -1,5 +1,6 @@
 package it.emmeweb.tvlauncher;
 
+import android.graphics.drawable.Drawable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,18 +19,36 @@ public class TileAdapter extends RecyclerView.Adapter<TileAdapter.VH> {
         void onLongClick(AppItem item, View anchor);
     }
 
+    private static final int[] TILE_W = {120, 150, 190};
+    private static final int[] ICON_H = {58, 74, 96};
+
     private final List<AppItem> items;
     private final Listener listener;
+    private final int size;
 
-    public TileAdapter(List<AppItem> items, Listener listener) {
+    public TileAdapter(List<AppItem> items, int size, Listener listener) {
         this.items = items;
+        this.size = Math.max(0, Math.min(2, size));
         this.listener = listener;
+    }
+
+    public void updateIcon(String id, Drawable d) {
+        for (int i = 0; i < items.size(); i++) {
+            if (items.get(i).id.equals(id)) {
+                items.set(i, new AppItem(id, items.get(i).label, d, items.get(i).intent, items.get(i).isApp));
+                notifyItemChanged(i);
+            }
+        }
     }
 
     @NonNull
     @Override
     public VH onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.tile, parent, false);
+        float dp = parent.getResources().getDisplayMetrics().density;
+        v.getLayoutParams().width = (int) (TILE_W[size] * dp);
+        ImageView icon = v.findViewById(R.id.icon);
+        icon.getLayoutParams().height = (int) (ICON_H[size] * dp);
         return new VH(v);
     }
 
