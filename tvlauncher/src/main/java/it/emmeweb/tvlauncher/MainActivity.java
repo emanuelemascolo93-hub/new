@@ -262,9 +262,14 @@ public class MainActivity extends AppCompatActivity {
                 if (state != TvInputManager.INPUT_STATE_CONNECTED) continue; // solo ingressi con un dispositivo collegato
                 CharSequence custom = in.loadCustomLabel(this);
                 String label = custom != null && custom.length() > 0 ? custom.toString() : String.valueOf(in.loadLabel(this));
-                if (in.getHdmiDeviceInfo() != null && in.getHdmiDeviceInfo().getDisplayName() != null
-                        && !in.getHdmiDeviceInfo().getDisplayName().isEmpty())
-                    label = in.getHdmiDeviceInfo().getDisplayName() + " · " + in.loadLabel(this);
+                // nome CEC del dispositivo (API nascosta): se disponibile lo mostriamo
+                try {
+                    Object hdmi = TvInputInfo.class.getMethod("getHdmiDeviceInfo").invoke(in);
+                    if (hdmi != null) {
+                        Object name = hdmi.getClass().getMethod("getDisplayName").invoke(hdmi);
+                        if (name != null && !name.toString().isEmpty()) label = name + " \u00b7 " + in.loadLabel(this);
+                    }
+                } catch (Exception ignored) { }
                 int res = android.R.drawable.ic_menu_slideshow;
                 if (id.toUpperCase().contains("HDMI")) res = android.R.drawable.ic_menu_set_as;
                 Intent i = new Intent(Intent.ACTION_VIEW, TvContract.buildChannelUriForPassthroughInput(id));
