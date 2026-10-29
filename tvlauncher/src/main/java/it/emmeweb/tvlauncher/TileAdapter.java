@@ -1,6 +1,10 @@
 package it.emmeweb.tvlauncher;
 
 import android.graphics.drawable.Drawable;
+import android.media.tv.TvContract;
+import android.media.tv.TvView;
+import android.net.Uri;
+import android.widget.FrameLayout;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -47,8 +51,8 @@ public class TileAdapter extends RecyclerView.Adapter<TileAdapter.VH> {
         View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.tile, parent, false);
         float dp = parent.getResources().getDisplayMetrics().density;
         v.getLayoutParams().width = (int) (TILE_W[size] * dp);
-        ImageView icon = v.findViewById(R.id.icon);
-        icon.getLayoutParams().height = (int) (ICON_H[size] * dp);
+        FrameLayout box = v.findViewById(R.id.iconBox);
+        box.getLayoutParams().height = (int) (ICON_H[size] * dp);
         return new VH(v);
     }
 
@@ -59,15 +63,28 @@ public class TileAdapter extends RecyclerView.Adapter<TileAdapter.VH> {
         h.label.setText(it.label);
         h.itemView.setOnClickListener(v -> listener.onClick(it));
         h.itemView.setOnLongClickListener(v -> { listener.onLongClick(it, v); return true; });
-        h.itemView.setOnFocusChangeListener((v, f) ->
-                v.animate().scaleX(f ? 1.12f : 1f).scaleY(f ? 1.12f : 1f).setDuration(120).start());
+        boolean isHdmi = it.id.startsWith("src:") && it.id.contains("HDMI");
+        h.preview.setVisibility(View.GONE);
+        h.itemView.setOnFocusChangeListener((v, f) -> {
+            v.animate().scaleX(f ? 1.12f : 1f).scaleY(f ? 1.12f : 1f).setDuration(120).start();
+            if (!isHdmi) return;
+            if (f) {
+                try {
+                    h.preview.setVisibility(View.VISIBLE);
+                    h.preview.tune(it.id.substring(4), TvContract.buildChannelUriForPassthroughInput(it.id.substring(4)));
+                } catch (Exception e) { h.preview.setVisibility(View.GONE); }
+            } else {
+                try { h.preview.reset(); } catch (Exception ignored) { }
+                h.preview.setVisibility(View.GONE);
+            }
+        });
     }
 
     @Override
     public int getItemCount() { return items.size(); }
 
     static class VH extends RecyclerView.ViewHolder {
-        ImageView icon; TextView label;
-        VH(View v) { super(v); icon = v.findViewById(R.id.icon); label = v.findViewById(R.id.label); }
+        ImageView icon; TextView label; TvView preview;
+        VH(View v) { super(v); icon = v.findViewById(R.id.icon); label = v.findViewById(R.id.label); preview = v.findViewById(R.id.preview); }
     }
 }

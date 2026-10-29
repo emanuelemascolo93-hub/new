@@ -78,6 +78,13 @@ public class MainActivity extends AppCompatActivity {
         @Override public void onReceive(Context c, Intent i) { build(); }
     };
 
+    private final TvInputManager.TvInputCallback tvCb = new TvInputManager.TvInputCallback() {
+        @Override public void onInputStateChanged(String inputId, int state) { build(); }
+        @Override public void onInputAdded(String inputId) { build(); }
+        @Override public void onInputRemoved(String inputId) { build(); }
+        @Override public void onInputUpdated(String inputId) { build(); }
+    };
+
     @Override
     protected void onCreate(Bundle b) {
         super.onCreate(b);
@@ -98,6 +105,7 @@ public class MainActivity extends AppCompatActivity {
         f.addAction(Intent.ACTION_PACKAGE_CHANGED);
         f.addDataScheme("package");
         registerReceiver(pkgReceiver, f);
+        try { ((TvInputManager) getSystemService(Context.TV_INPUT_SERVICE)).registerCallback(tvCb, handler); } catch (Exception ignored) { }
     }
 
     @Override protected void onResume() {
@@ -116,6 +124,7 @@ public class MainActivity extends AppCompatActivity {
     @Override protected void onDestroy() {
         super.onDestroy();
         unregisterReceiver(pkgReceiver);
+        try { ((TvInputManager) getSystemService(Context.TV_INPUT_SERVICE)).unregisterCallback(tvCb); } catch (Exception ignored) { }
     }
 
     @Override public void onBackPressed() { /* la home non si chiude */ }
@@ -248,8 +257,14 @@ public class MainActivity extends AppCompatActivity {
             TvInputManager tim = (TvInputManager) getSystemService(Context.TV_INPUT_SERVICE);
             for (TvInputInfo in : tim.getTvInputList()) {
                 if (!in.isPassthroughInput()) continue;
-                String label = String.valueOf(in.loadLabel(this));
                 String id = in.getId();
+                int state = tim.getInputState(id);
+                if (state != TvInputManager.INPUT_STATE_CONNECTED) continue; // solo ingressi con un dispositivo collegato
+                CharSequence custom = in.loadCustomLabel(this);
+                String label = custom != null && custom.length() > 0 ? custom.toString() : String.valueOf(in.loadLabel(this));
+                if (in.getHdmiDeviceInfo() != null && in.getHdmiDeviceInfo().getDisplayName() != null
+                        && !in.getHdmiDeviceInfo().getDisplayName().isEmpty())
+                    label = in.getHdmiDeviceInfo().getDisplayName() + " · " + in.loadLabel(this);
                 int res = android.R.drawable.ic_menu_slideshow;
                 if (id.toUpperCase().contains("HDMI")) res = android.R.drawable.ic_menu_set_as;
                 Intent i = new Intent(Intent.ACTION_VIEW, TvContract.buildChannelUriForPassthroughInput(id));

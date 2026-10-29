@@ -9,11 +9,21 @@
     android:focusableInTouchMode="true"
     android:background="@drawable/tile_bg"
     android:padding="10dp">
-    <ImageView
-        android:id="@+id/icon"
-        android:layout_width="130dp"
-        android:layout_height="74dp"
-        android:scaleType="centerInside"/>
+    <FrameLayout
+        android:id="@+id/iconBox"
+        android:layout_width="match_parent"
+        android:layout_height="74dp">
+        <ImageView
+            android:id="@+id/icon"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:scaleType="centerInside"/>
+        <android.media.tv.TvView
+            android:id="@+id/preview"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:visibility="gone"/>
+    </FrameLayout>
     <TextView
         android:id="@+id/label"
         android:layout_width="match_parent"
