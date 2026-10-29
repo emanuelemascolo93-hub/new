@@ -6,6 +6,10 @@
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" android:maxSdkVersion="32" />
     <uses-permission android:name="android.permission.READ_MEDIA_IMAGES" />
     <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_DATA_SYNC" />
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 
     <uses-feature android:name="android.hardware.touchscreen" android:required="false" />
@@ -40,6 +44,8 @@
         </activity>
 
         <activity android:name=".CameraActivity" android:exported="false" android:screenOrientation="landscape" />
+
+        <service android:name=".RemoteService" android:exported="false" android:foregroundServiceType="dataSync" />
 
         <receiver android:name=".BootReceiver" android:exported="true">
             <intent-filter>

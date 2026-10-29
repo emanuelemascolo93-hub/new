@@ -57,6 +57,7 @@ public class MainActivity extends AppCompatActivity {
     };
     private static final String[] IMG_DIRS = {"/sdcard/Pictures", "/sdcard/Download", "/sdcard/DCIM"};
 
+    public static MainActivity instance;
     private Prefs prefs;
     private LinearLayout rows;
     private TextView clock, date;
@@ -73,6 +74,15 @@ public class MainActivity extends AppCompatActivity {
     };
     private final Runnable camRefresh = new Runnable() {
         @Override public void run() { refreshCams(); handler.postDelayed(this, 15_000); }
+    };
+    private final Runnable weatherRefresh = new Runnable() {
+        @Override public void run() {
+            Net.IO.execute(() -> {
+                Weather.Info w = Weather.fetch();
+                if (w != null) handler.post(() -> showWeather(w));
+            });
+            handler.postDelayed(this, 20 * 60_000);
+        }
     };
     private final BroadcastReceiver pkgReceiver = new BroadcastReceiver() {
         @Override public void onReceive(Context c, Intent i) { build(); }
@@ -94,6 +104,8 @@ public class MainActivity extends AppCompatActivity {
         clock = findViewById(R.id.clock);
         date = findViewById(R.id.date);
         findViewById(R.id.gear).setOnClickListener(v -> settingsMenu());
+        instance = this;
+        try { startForegroundService(new Intent(this, RemoteService.class)); } catch (Exception ignored) { }
         loadWallpaper();
         if (prefs.firstRun()) {
             prefs.saveFavorites(new ArrayList<>(Arrays.asList(DEFAULT_FAVS)));
@@ -113,12 +125,14 @@ public class MainActivity extends AppCompatActivity {
         build();
         handler.post(tick);
         handler.post(camRefresh);
+        handler.post(weatherRefresh);
     }
 
     @Override protected void onPause() {
         super.onPause();
         handler.removeCallbacks(tick);
         handler.removeCallbacks(camRefresh);
+        handler.removeCallbacks(weatherRefresh);
     }
 
     @Override protected void onDestroy() {
@@ -128,6 +142,56 @@ public class MainActivity extends AppCompatActivity {
     }
 
     @Override public void onBackPressed() { /* la home non si chiude */ }
+
+    public void rebuild() { build(); loadWallpaper(); }
+
+    private void showWeather(Weather.Info w) {
+        findViewById(R.id.weatherBox).setVisibility(View.VISIBLE);
+        ((TextView) findViewById(R.id.wIcon)).setText(w.icon);
+        ((TextView) findViewById(R.id.wTemp)).setText(Math.round(w.temp) + "\u00b0");
+        ((TextView) findViewById(R.id.wDesc)).setText("Caivano \u00b7 " + w.desc + " \u00b7 " + Math.round(w.tmin) + "\u00b0/" + Math.round(w.tmax) + "\u00b0");
+    }
+
+    private void remoteDialog() {
+        String ip = "?";
+        try {
+            android.net.wifi.WifiManager wm = (android.net.wifi.WifiManager) getApplicationContext().getSystemService(Context.WIFI_SERVICE);
+            int a = wm.getConnectionInfo().getIpAddress();
+            if (a != 0) ip = (a & 0xff) + "." + (a >> 8 & 0xff) + "." + (a >> 16 & 0xff) + "." + (a >> 24 & 0xff);
+        } catch (Exception ignored) { }
+        if ("?".equals(ip)) {
+            try {
+                for (java.util.Enumeration<java.net.NetworkInterface> e = java.net.NetworkInterface.getNetworkInterfaces(); e.hasMoreElements(); ) {
+                    for (java.util.Enumeration<java.net.InetAddress> a = e.nextElement().getInetAddresses(); a.hasMoreElements(); ) {
+                        java.net.InetAddress ad = a.nextElement();
+                        if (!ad.isLoopbackAddress() && ad instanceof java.net.Inet4Address) ip = ad.getHostAddress();
+                    }
+                }
+            } catch (Exception ignored) { }
+        }
+        String url = "http://" + ip + ":" + RemoteServer.PORT;
+        LinearLayout box = new LinearLayout(this);
+        box.setOrientation(LinearLayout.VERTICAL);
+        box.setPadding(40, 20, 40, 10);
+        box.setGravity(android.view.Gravity.CENTER_HORIZONTAL);
+        ImageView qr = new ImageView(this);
+        try {
+            com.google.zxing.common.BitMatrix m = new com.google.zxing.qrcode.QRCodeWriter().encode(url, com.google.zxing.BarcodeFormat.QR_CODE, 400, 400);
+            Bitmap bm = Bitmap.createBitmap(400, 400, Bitmap.Config.RGB_565);
+            for (int x = 0; x < 400; x++) for (int y = 0; y < 400; y++) bm.setPixel(x, y, m.get(x, y) ? 0xFF000000 : 0xFFFFFFFF);
+            qr.setImageBitmap(bm);
+        } catch (Exception ignored) { }
+        box.addView(qr, new LinearLayout.LayoutParams(400, 400));
+        TextView t = new TextView(this);
+        t.setText("\n" + url + "\nPIN: " + prefs.pin() + "\n\nInquadra il QR col telefono (stessa rete Wi-Fi).");
+        t.setGravity(android.view.Gravity.CENTER);
+        t.setTextSize(16);
+        box.addView(t);
+        new AlertDialog.Builder(this).setTitle("Telecomando web").setView(box)
+                .setPositiveButton("OK", null)
+                .setNeutralButton("Nuovo PIN", (d, w) -> { prefs.setPin(String.valueOf(1000 + new java.util.Random().nextInt(9000))); remoteDialog(); })
+                .show();
+    }
 
     // ================= sfondo =================
 
@@ -183,14 +247,14 @@ public class MainActivity extends AppCompatActivity {
 
     private void build() {
         rows.removeAllViews();
-        Map<String, AppItem> all = loadApps();
+        Map<String, AppItem> all = Catalog.apps(this);
         Set<String> hidden = prefs.hidden();
 
         for (String row : prefs.rowOrder()) {
             if (!prefs.rowEnabled(row)) continue;
             switch (row) {
                 case "sources": {
-                    List<AppItem> l = sourceItems(all);
+                    List<AppItem> l = Catalog.sources(this, all);
                     if (!l.isEmpty()) addRow(getString(R.string.row_sources), l);
                     break;
                 }
@@ -224,64 +288,6 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    private Map<String, AppItem> loadApps() {
-        PackageManager pm = getPackageManager();
-        Map<String, AppItem> all = new HashMap<>();
-        Intent q = new Intent(Intent.ACTION_MAIN).addCategory(Intent.CATEGORY_LEANBACK_LAUNCHER);
-        for (ResolveInfo ri : pm.queryIntentActivities(q, 0)) addApp(pm, all, ri, true);
-        Intent q2 = new Intent(Intent.ACTION_MAIN).addCategory(Intent.CATEGORY_LAUNCHER);
-        for (ResolveInfo ri : pm.queryIntentActivities(q2, 0)) addApp(pm, all, ri, false);
-        all.remove(getPackageName());
-        return all;
-    }
-
-    private void addApp(PackageManager pm, Map<String, AppItem> all, ResolveInfo ri, boolean leanback) {
-        String pkg = ri.activityInfo.packageName;
-        if (all.containsKey(pkg)) return;
-        Drawable icon = null;
-        if (leanback) {
-            try { icon = ri.activityInfo.loadBanner(pm); } catch (Exception ignored) { }
-            if (icon == null) try { icon = pm.getApplicationBanner(pkg); } catch (Exception ignored) { }
-        }
-        if (icon == null) icon = ri.loadIcon(pm);
-        Intent launch = pm.getLeanbackLaunchIntentForPackage(pkg);
-        if (launch == null) launch = pm.getLaunchIntentForPackage(pkg);
-        if (launch == null) return;
-        all.put(pkg, new AppItem(pkg, ri.loadLabel(pm).toString(), icon, launch, true));
-    }
-
-    /** Sorgenti: ingressi HDMI/AV via TvInputManager + TV digitale + USB. */
-    private List<AppItem> sourceItems(Map<String, AppItem> all) {
-        List<AppItem> l = new ArrayList<>();
-        try {
-            TvInputManager tim = (TvInputManager) getSystemService(Context.TV_INPUT_SERVICE);
-            for (TvInputInfo in : tim.getTvInputList()) {
-                if (!in.isPassthroughInput()) continue;
-                String id = in.getId();
-                int state = tim.getInputState(id);
-                if (state != TvInputManager.INPUT_STATE_CONNECTED) continue; // solo ingressi con un dispositivo collegato
-                CharSequence custom = in.loadCustomLabel(this);
-                String label = custom != null && custom.length() > 0 ? custom.toString() : String.valueOf(in.loadLabel(this));
-                // nome CEC del dispositivo (API nascosta): se disponibile lo mostriamo
-                try {
-                    Object hdmi = TvInputInfo.class.getMethod("getHdmiDeviceInfo").invoke(in);
-                    if (hdmi != null) {
-                        Object name = hdmi.getClass().getMethod("getDisplayName").invoke(hdmi);
-                        if (name != null && !name.toString().isEmpty()) label = name + " \u00b7 " + in.loadLabel(this);
-                    }
-                } catch (Exception ignored) { }
-                int res = android.R.drawable.ic_menu_slideshow;
-                if (id.toUpperCase().contains("HDMI")) res = android.R.drawable.ic_menu_set_as;
-                Intent i = new Intent(Intent.ACTION_VIEW, TvContract.buildChannelUriForPassthroughInput(id));
-                l.add(new AppItem("src:" + id, label, ContextCompat.getDrawable(this, res), i, false));
-            }
-        } catch (Exception ignored) { }
-        AppItem tv = all.get("com.tcl.tv");
-        if (tv != null) l.add(0, new AppItem("src:dtv", "TV digitale", tv.icon, tv.intent, false));
-        AppItem usb = all.get("com.tcl.ui_mediaCenter");
-        if (usb != null) l.add(new AppItem("src:usb", "USB", usb.icon, usb.intent, false));
-        return l;
-    }
 
     private List<AppItem> camItems() {
         List<AppItem> l = new ArrayList<>();
@@ -338,6 +344,7 @@ public class MainActivity extends AppCompatActivity {
         l.add(sys("sys:settings", "Impostazioni TV", android.R.drawable.ic_menu_preferences, new Intent(Settings.ACTION_SETTINGS)));
         l.add(sys("sys:wifi", "Rete", android.R.drawable.ic_menu_mapmode, new Intent(Settings.ACTION_WIFI_SETTINGS)));
         l.add(sys("sys:bt", "Accessori", android.R.drawable.ic_menu_share, new Intent(Settings.ACTION_BLUETOOTH_SETTINGS)));
+        l.add(sys("sys:remote", "Telecomando web", android.R.drawable.ic_menu_share, null));
         l.add(sys("sys:launcher", "Launcher", android.R.drawable.ic_menu_manage, null));
         return l;
     }
@@ -362,6 +369,7 @@ public class MainActivity extends AppCompatActivity {
 
     private void open(AppItem it) {
         if ("sys:launcher".equals(it.id)) { settingsMenu(); return; }
+        if ("sys:remote".equals(it.id)) { remoteDialog(); return; }
         if (it.id.startsWith("smart:")) { callWebhook(it); return; }
         try {
             Intent i = new Intent(it.intent);
@@ -414,21 +422,22 @@ public class MainActivity extends AppCompatActivity {
     // ================= impostazioni launcher =================
 
     private void settingsMenu() {
-        String[] opts = {"Sfondo", "Righe (attiva/disattiva)", "Ordine righe", "Dimensione icone",
+        String[] opts = {"Telecomando web (QR + PIN)", "Sfondo", "Righe (attiva/disattiva)", "Ordine righe", "Dimensione icone",
                 showHidden ? "Nascondi le app nascoste" : "Mostra le app nascoste",
                 "Telecamere (NVR)", "Smart home (aggiungi tile)", "Impostazioni TV", "Riavvia launcher"};
         new AlertDialog.Builder(this).setTitle("EMMEWEB TV — Impostazioni")
                 .setItems(opts, (d, w) -> {
                     switch (w) {
-                        case 0: pickWallpaper(); break;
-                        case 1: rowsToggle(); break;
-                        case 2: rowsOrder(); break;
-                        case 3: iconSize(); break;
-                        case 4: showHidden = !showHidden; build(); break;
-                        case 5: nvrDialog(); break;
-                        case 6: smartAdd(); break;
-                        case 7: startActivity(new Intent(Settings.ACTION_SETTINGS)); break;
-                        case 8: recreate(); break;
+                        case 0: remoteDialog(); break;
+                        case 1: pickWallpaper(); break;
+                        case 2: rowsToggle(); break;
+                        case 3: rowsOrder(); break;
+                        case 4: iconSize(); break;
+                        case 5: showHidden = !showHidden; build(); break;
+                        case 6: nvrDialog(); break;
+                        case 7: smartAdd(); break;
+                        case 8: startActivity(new Intent(Settings.ACTION_SETTINGS)); break;
+                        case 9: recreate(); break;
                     }
                 }).show();
     }

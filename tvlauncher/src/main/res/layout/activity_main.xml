@@ -14,6 +14,43 @@
         android:layout_height="match_parent"
         android:background="@drawable/scrim"/>
 
+    <LinearLayout
+        android:id="@+id/weatherBox"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="top|start"
+        android:layout_marginTop="32dp"
+        android:layout_marginStart="48dp"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:visibility="gone">
+        <TextView
+            android:id="@+id/wIcon"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="38sp"
+            android:layout_marginEnd="12dp"/>
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+            <TextView
+                android:id="@+id/wTemp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="#FFFFFF"
+                android:textSize="30sp"
+                android:shadowColor="#000000" android:shadowRadius="6"/>
+            <TextView
+                android:id="@+id/wDesc"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="#CCFFFFFF"
+                android:textSize="15sp"
+                android:shadowColor="#000000" android:shadowRadius="6"/>
+        </LinearLayout>
+    </LinearLayout>
+
     <ImageButton
         android:id="@+id/gear"
         android:layout_width="48dp"

@@ -11,5 +11,6 @@ public class BootReceiver extends BroadcastReceiver {
         Intent i = new Intent(c, MainActivity.class);
         i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
         c.startActivity(i);
+        try { c.startForegroundService(new Intent(c, RemoteService.class)); } catch (Exception ignored) { }
     }
 }

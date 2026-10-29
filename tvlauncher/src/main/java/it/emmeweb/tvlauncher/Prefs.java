@@ -97,6 +97,13 @@ public class Prefs {
         sp.edit().putString("smart", sb.toString()).apply();
     }
 
+    public String pin() {
+        String p = sp.getString("pin", "");
+        if (p.isEmpty()) { p = String.valueOf(1000 + new java.util.Random().nextInt(9000)); sp.edit().putString("pin", p).apply(); }
+        return p;
+    }
+    public void setPin(String p) { sp.edit().putString("pin", p).apply(); }
+
     public String wallpaperPath() { return sp.getString("wall", ""); }
     public void setWallpaperPath(String p) { sp.edit().putString("wall", p).apply(); }
 }

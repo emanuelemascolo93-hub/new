@@ -1,0 +1,182 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="theme-color" content="#0b0b0f">
+<title>EMMEWEB TV</title>
+<style>
+:root{--bg:#0b0b0f;--card:#17171f;--acc:#7a3bf0;--txt:#fff;--mut:#9a9aa8}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+body{margin:0;background:var(--bg);color:var(--txt);font-family:-apple-system,Segoe UI,Roboto,sans-serif;padding-bottom:90px}
+header{display:flex;align-items:center;justify-content:space-between;padding:16px 16px 8px}
+header h1{font-size:18px;margin:0;letter-spacing:.5px}
+header h1 span{color:var(--acc)}
+.pill{font-size:12px;color:var(--mut)}
+nav{position:fixed;bottom:0;left:0;right:0;display:flex;background:#111118;border-top:1px solid #222;padding:6px 0 env(safe-area-inset-bottom)}
+nav button{flex:1;background:none;border:0;color:var(--mut);font-size:11px;padding:8px 0}
+nav button.on{color:var(--acc)}
+nav button i{display:block;font-style:normal;font-size:22px;margin-bottom:2px}
+section{display:none;padding:8px 16px}
+section.on{display:block}
+h2{font-size:13px;color:var(--mut);text-transform:uppercase;letter-spacing:1px;margin:14px 0 8px}
+.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.tile{background:var(--card);border-radius:14px;padding:10px 6px;text-align:center;border:1px solid #22222c}
+.tile:active{border-color:var(--acc);background:#20183a}
+.tile img{width:100%;height:54px;object-fit:contain;border-radius:8px}
+.tile .ic{font-size:30px;height:54px;line-height:54px}
+.tile div{font-size:11px;margin-top:6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.row{display:flex;gap:10px;align-items:center;background:var(--card);border-radius:12px;padding:12px;margin-bottom:8px;border:1px solid #22222c}
+.row:active{border-color:var(--acc)}
+.row b{flex:1;font-weight:500}
+.row small{color:var(--mut)}
+.pad{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;max-width:280px;margin:12px auto}
+.pad button,.btn{background:var(--card);border:1px solid #2a2a36;color:#fff;border-radius:14px;font-size:20px;padding:18px 0}
+.pad button:active,.btn:active{background:var(--acc)}
+.pad .ok{background:var(--acc);font-size:16px;font-weight:600}
+.bar{display:flex;gap:8px;margin:10px 0}
+.bar .btn{flex:1;font-size:15px;padding:14px 0}
+input,textarea{width:100%;background:#101017;border:1px solid #2a2a36;color:#fff;border-radius:10px;padding:12px;font-size:16px}
+textarea{min-height:70px}
+.send{background:var(--acc);color:#fff;border:0;border-radius:10px;padding:12px 18px;font-size:15px;margin-top:8px;width:100%}
+.cam img{width:100%;border-radius:12px;background:#000;aspect-ratio:16/9;object-fit:cover}
+.cam{margin-bottom:12px}
+.cam div{display:flex;justify-content:space-between;align-items:center;padding:6px 2px;font-size:14px}
+.cam button{background:var(--acc);border:0;color:#fff;border-radius:8px;padding:6px 12px}
+.toast{position:fixed;top:12px;left:50%;transform:translateX(-50%);background:#222;color:#fff;padding:8px 14px;border-radius:20px;font-size:13px;opacity:0;transition:.2s;pointer-events:none}
+.toast.on{opacity:1}
+#login{position:fixed;inset:0;background:var(--bg);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;padding:30px;z-index:9}
+#login input{text-align:center;font-size:28px;letter-spacing:10px;max-width:220px}
+.warn{background:#3a2a12;color:#ffd38a;border-radius:10px;padding:10px;font-size:13px;margin:8px 0}
+label{font-size:12px;color:var(--mut);display:block;margin:10px 0 4px}
+</style>
+</head>
+<body>
+<div id="login">
+  <h1>EMME<span style="color:#7a3bf0">WEB</span> TV</h1>
+  <p class="pill">Inserisci il PIN del launcher</p>
+  <input id="pin" type="tel" maxlength="4" placeholder="••••" autofocus>
+  <button class="send" style="max-width:220px" onclick="login()">Entra</button>
+  <p id="pinErr" class="pill"></p>
+</div>
+
+<header><h1>EMME<span>WEB</span> TV</h1><span class="pill" id="status"></span></header>
+
+<section id="s-apps" class="on">
+  <h2>Sorgenti</h2><div class="grid" id="sources"></div>
+  <h2>Preferiti</h2><div class="grid" id="favs"></div>
+  <h2>Tutte le app</h2><div class="grid" id="apps"></div>
+</section>
+
+<section id="s-remote">
+  <div class="bar">
+    <button class="btn" onclick="key('home')">⌂ Home</button>
+    <button class="btn" onclick="key('back')">← Indietro</button>
+    <button class="btn" onclick="key('settings')">⚙︎ TV</button>
+  </div>
+  <div class="pad">
+    <span></span><button onclick="key('up')">▲</button><span></span>
+    <button onclick="key('left')">◀</button><button class="ok" onclick="key('ok')">OK</button><button onclick="key('right')">▶</button>
+    <span></span><button onclick="key('down')">▼</button><span></span>
+  </div>
+  <div class="bar">
+    <button class="btn" onclick="key('voldown')">🔉 −</button>
+    <button class="btn" onclick="key('mute')">🔇</button>
+    <button class="btn" onclick="key('volup')">🔊 +</button>
+  </div>
+  <div id="accWarn" class="warn" style="display:none">Il servizio "Tasto Home" del launcher non è attivo: tastiera e navigazione non funzionano. Attivalo da Impostazioni TV → Accessibilità → EMMEWEB TV.</div>
+  <h2>Tastiera → TV</h2>
+  <p class="pill">Apri un campo di testo sulla TV (ricerca, password…), scrivi qui e premi Invia.</p>
+  <textarea id="txt" placeholder="Scrivi qui…"></textarea>
+  <button class="send" onclick="sendText()">Invia alla TV</button>
+</section>
+
+<section id="s-cams"><div id="cams"></div><p class="pill" id="camsEmpty"></p></section>
+
+<section id="s-smart">
+  <h2>Azioni Alexa / webhook</h2><div id="smart"></div>
+  <h2>Aggiungi azione</h2>
+  <label>Nome</label><input id="smName" placeholder="Avvia Deebot">
+  <label>URL (Virtual Smart Home → URL Routine Trigger)</label><input id="smUrl" placeholder="https://…">
+  <button class="send" onclick="smartAdd()">Aggiungi tile</button>
+</section>
+
+<section id="s-set">
+  <h2>Sfondo</h2>
+  <input type="file" id="wall" accept="image/*">
+  <button class="send" onclick="upWall()">Carica sfondo dal telefono</button>
+  <button class="btn" style="width:100%;margin-top:8px;font-size:14px" onclick="api('/api/wallpaper/reset').then(()=>toast('Sfondo EMMEWEB ripristinato'))">Torna allo sfondo EMMEWEB</button>
+  <h2>Telecamere (NVR)</h2>
+  <label>IP NVR</label><input id="nvrIp">
+  <label>Utente</label><input id="nvrUser">
+  <label>Password</label><input id="nvrPass" type="password" placeholder="(lascia vuoto per non cambiarla)">
+  <label>Numero telecamere</label><input id="nvrCh" type="number">
+  <button class="send" onclick="saveNvr()">Salva NVR</button>
+  <div id="camNames"></div>
+</section>
+
+<nav>
+  <button class="on" onclick="go('apps',this)"><i>▦</i>App</button>
+  <button onclick="go('remote',this)"><i>⌖</i>Telecomando</button>
+  <button onclick="go('cams',this)"><i>◉</i>Telecamere</button>
+  <button onclick="go('smart',this)"><i>✦</i>Alexa</button>
+  <button onclick="go('set',this)"><i>⚙︎</i>Impostazioni</button>
+</nav>
+<div class="toast" id="toast"></div>
+
+<script>
+let PIN = localStorage.getItem('pin') || '';
+let S = null;
+const $ = id => document.getElementById(id);
+function toast(m){const t=$('toast');t.textContent=m;t.classList.add('on');setTimeout(()=>t.classList.remove('on'),1500)}
+async function api(path, params){
+  const u = new URL(path, location.origin);
+  if (params) Object.entries(params).forEach(([k,v])=>u.searchParams.set(k,v));
+  const r = await fetch(u, {headers:{'x-pin':PIN}});
+  if (r.status===401){localStorage.removeItem('pin');$('login').style.display='flex';throw new Error('pin')}
+  return r.json().catch(()=>({}));
+}
+async function login(){
+  const pin=$('pin').value.trim();
+  const r=await fetch('/api/pin?pin='+pin,{method:'POST'}).then(r=>r.json());
+  if(r.ok){PIN=pin;localStorage.setItem('pin',pin);$('login').style.display='none';load()}
+  else $('pinErr').textContent='PIN errato';
+}
+function go(n,btn){document.querySelectorAll('section').forEach(s=>s.classList.remove('on'));$('s-'+n).classList.add('on');
+  document.querySelectorAll('nav button').forEach(b=>b.classList.remove('on'));btn.classList.add('on');
+  if(n==='cams')refreshCams();}
+function tile(label,icon,img,onclick){const d=document.createElement('div');d.className='tile';d.onclick=onclick;
+  d.innerHTML=(img?`<img src="${img}">`:`<div class="ic">${icon}</div>`)+`<div>${label}</div>`;return d}
+async function load(){
+  try{S=await api('/api/state')}catch(e){return}
+  $('status').textContent='connesso';
+  $('sources').innerHTML='';S.sources.forEach(s=>$('sources').appendChild(tile(s.label,s.id.includes('HDMI')?'🔌':s.id==='src:dtv'?'📺':'💾',null,()=>api('/api/source',{id:s.id}).then(()=>toast(s.label)))));
+  $('favs').innerHTML='';$('apps').innerHTML='';
+  S.apps.forEach(a=>{const t=tile(a.label,'',a.icon,()=>api('/api/launch',{pkg:a.id}).then(()=>toast('Apro '+a.label)));(a.fav?$('favs'):$('apps')).appendChild(t)});
+  $('smart').innerHTML='';S.smart.forEach((s,i)=>{const r=document.createElement('div');r.className='row';r.innerHTML=`<span>✦</span><b>${s.name}</b><small onclick="event.stopPropagation();smartDel(${i})">✕</small>`;r.onclick=()=>api('/api/smart',{i}).then(()=>toast(s.name+' inviato'));$('smart').appendChild(r)});
+  $('nvrIp').value=S.nvr.ip;$('nvrUser').value=S.nvr.user;$('nvrCh').value=S.nvr.ch;
+  $('camNames').innerHTML=S.cams.map(c=>`<label>Nome telecamera ${c.ch}</label><input value="${c.name}" onchange="api('/api/cam/name',{ch:${c.ch},name:this.value}).then(()=>toast('Salvato'))">`).join('');
+  $('accWarn').style.display=S.accessibility?'none':'block';
+  $('camsEmpty').textContent=S.cams.length?'':'Nessuna telecamera configurata: vai in Impostazioni → NVR.';
+}
+function refreshCams(){ if(!S)return; $('cams').innerHTML=S.cams.map(c=>`<div class="cam"><img src="/api/snap?ch=${c.ch}&t=${Date.now()}" onerror="this.style.opacity=.3"><div><span>${c.name}</span><button onclick="api('/api/cam',{ch:${c.ch}}).then(()=>toast('${c.name} sulla TV'))">Mostra sulla TV</button></div></div>`).join('');
+  document.querySelectorAll('#cams img').forEach(i=>i.addEventListener('load',()=>{}));}
+// fetch con header PIN per le immagini
+const _origSetSrc = HTMLImageElement.prototype;
+document.addEventListener('DOMContentLoaded',()=>{});
+function key(k){api('/api/key',{k})}
+function sendText(){const t=$('txt').value;if(!t)return;api('/api/text',{t}).then(r=>{toast(r.ok?'Inviato':'Nessun campo di testo attivo sulla TV');if(r.ok)$('txt').value=''})}
+function smartAdd(){const n=$('smName').value.trim(),u=$('smUrl').value.trim();if(!n||!u)return;api('/api/smart/add',{name:n,url:u}).then(()=>{$('smName').value='';$('smUrl').value='';toast('Aggiunta');load()})}
+function smartDel(i){api('/api/smart/del',{i}).then(load)}
+function saveNvr(){api('/api/nvr',{ip:$('nvrIp').value.trim(),user:$('nvrUser').value.trim(),pass:$('nvrPass').value,ch:$('nvrCh').value}).then(()=>{toast('NVR salvato');load()})}
+async function upWall(){const f=$('wall').files[0];if(!f)return toast('Scegli un\'immagine');const fd=new FormData();fd.append('file',f);
+  const r=await fetch('/api/wallpaper',{method:'POST',headers:{'x-pin':PIN},body:fd});toast(r.ok?'Sfondo aggiornato':'Errore')}
+// snapshot con PIN: le <img> non mandano header, quindi usiamo fetch+blob
+const obs=new MutationObserver(()=>{document.querySelectorAll('#cams img[src^="/api/snap"]').forEach(async img=>{const u=img.getAttribute('src');img.removeAttribute('src');try{const b=await fetch(u,{headers:{'x-pin':PIN}}).then(r=>r.blob());img.src=URL.createObjectURL(b)}catch(e){}})});
+obs.observe(document.getElementById('cams'),{childList:true});
+setInterval(()=>{if($('s-cams').classList.contains('on'))refreshCams()},5000);
+if(PIN){$('login').style.display='none';load()}
+</script>
+</body>
+</html>
