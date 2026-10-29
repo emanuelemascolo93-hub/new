@@ -70,7 +70,7 @@ public class Catalog {
             }
         } catch (Exception ignored) { }
         AppItem tv = all.get("com.tcl.tv");
-        if (tv != null) l.add(0, new AppItem("src:dtv", "TV digitale", ContextCompat.getDrawable(c, R.drawable.ic_tv), tv.intent, false));
+        if (tv != null) l.add(0, new AppItem("src:dtv", "Canali TV", ContextCompat.getDrawable(c, R.drawable.ic_tv), tv.intent, false));
         AppItem usb = all.get("com.tcl.ui_mediaCenter");
         if (usb != null) l.add(new AppItem("src:usb", "USB", ContextCompat.getDrawable(c, R.drawable.ic_usb), usb.intent, false));
         return l;

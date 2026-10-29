@@ -106,10 +106,13 @@ public class RemoteServer extends NanoHTTPD {
                 case "/api/text": {
                     String t = p.get("t");
                     boolean done = HomeKeyService.typeText(t != null ? t : "");
+                    if (!done && t != null) done = Adb.shell(ctx, "input text '" + t.replace("'", "'\\''").replace(" ", "%s") + "'") != null;
                     return json(new JSONObject().put("ok", done));
                 }
                 case "/api/key": {
                     String k = p.get("k");
+                    String code = keycode(k);
+                    if (code != null && Adb.key(ctx, code)) return ok();
                     AudioManager am = (AudioManager) ctx.getSystemService(Context.AUDIO_SERVICE);
                     switch (k) {
                         case "home": start(new Intent(ctx, MainActivity.class)); break;
@@ -143,6 +146,30 @@ public class RemoteServer extends NanoHTTPD {
         }
     }
 
+    private static String keycode(String k) {
+        switch (k) {
+            case "up": return "KEYCODE_DPAD_UP";
+            case "down": return "KEYCODE_DPAD_DOWN";
+            case "left": return "KEYCODE_DPAD_LEFT";
+            case "right": return "KEYCODE_DPAD_RIGHT";
+            case "ok": return "KEYCODE_DPAD_CENTER";
+            case "back": return "KEYCODE_BACK";
+            case "home": return "KEYCODE_HOME";
+            case "volup": return "KEYCODE_VOLUME_UP";
+            case "voldown": return "KEYCODE_VOLUME_DOWN";
+            case "mute": return "KEYCODE_VOLUME_MUTE";
+            case "play": return "KEYCODE_MEDIA_PLAY_PAUSE";
+            case "rew": return "KEYCODE_MEDIA_REWIND";
+            case "ff": return "KEYCODE_MEDIA_FAST_FORWARD";
+            case "menu": return "KEYCODE_MENU";
+            case "power": return "KEYCODE_POWER";
+            case "chup": return "KEYCODE_CHANNEL_UP";
+            case "chdown": return "KEYCODE_CHANNEL_DOWN";
+            case "settings": return "KEYCODE_SETTINGS";
+        }
+        return null;
+    }
+
     private JSONObject state() throws Exception {
         Map<String, AppItem> all = Catalog.apps(ctx);
         JSONObject o = new JSONObject();
@@ -166,6 +193,7 @@ public class RemoteServer extends NanoHTTPD {
         for (String[] t : prefs.smartTiles()) smart.put(new JSONObject().put("name", t[0]).put("url", t[1]));
         o.put("smart", smart);
         o.put("accessibility", HomeKeyService.isRunning());
+        o.put("adb", Adb.available(ctx));
         return o;
     }
 

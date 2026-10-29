@@ -85,6 +85,18 @@ label{font-size:12px;color:var(--mut);display:block;margin:10px 0 4px}
     <button class="btn" onclick="key('mute')">🔇</button>
     <button class="btn" onclick="key('volup')">🔊 +</button>
   </div>
+  <div class="bar">
+    <button class="btn" onclick="key('rew')">⏪</button>
+    <button class="btn" onclick="key('play')">⏯</button>
+    <button class="btn" onclick="key('ff')">⏩</button>
+    <button class="btn" onclick="key('chup')">CH+</button>
+    <button class="btn" onclick="key('chdown')">CH−</button>
+  </div>
+  <div class="bar">
+    <button class="btn" onclick="key('menu')">☰ Menu</button>
+    <button class="btn" style="background:#3a1212" onclick="if(confirm('Spegnere la TV?'))key('power')">⏻ Spegni</button>
+  </div>
+  <div id="adbWarn" class="warn" style="display:none">Frecce e tasti media usano il debug ADB della TV: alla prima pressione la TV mostra "Consentire il debug USB?" → spunta "Consenti sempre" → OK. Se non compare, attiva Opzioni sviluppatore → Debug USB.</div>
   <div id="accWarn" class="warn" style="display:none">Il servizio "Tasto Home" del launcher non è attivo: tastiera e navigazione non funzionano. Attivalo da Impostazioni TV → Accessibilità → EMMEWEB TV.</div>
   <h2>Tastiera → TV</h2>
   <p class="pill">Apri un campo di testo sulla TV (ricerca, password…), scrivi qui e premi Invia.</p>
@@ -158,6 +170,7 @@ async function load(){
   $('nvrIp').value=S.nvr.ip;$('nvrUser').value=S.nvr.user;$('nvrCh').value=S.nvr.ch;
   $('camNames').innerHTML=S.cams.map(c=>`<label>Nome telecamera ${c.ch}</label><input value="${c.name}" onchange="api('/api/cam/name',{ch:${c.ch},name:this.value}).then(()=>toast('Salvato'))">`).join('');
   $('accWarn').style.display=S.accessibility?'none':'block';
+  $('adbWarn').style.display=S.adb?'none':'block';
   $('camsEmpty').textContent=S.cams.length?'':'Nessuna telecamera configurata: vai in Impostazioni → NVR.';
 }
 function refreshCams(){ if(!S)return; $('cams').innerHTML=S.cams.map(c=>`<div class="cam"><img src="/api/snap?ch=${c.ch}&t=${Date.now()}" onerror="this.style.opacity=.3"><div><span>${c.name}</span><button onclick="api('/api/cam',{ch:${c.ch}}).then(()=>toast('${c.name} sulla TV'))">Mostra sulla TV</button></div></div>`).join('');
