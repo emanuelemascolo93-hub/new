@@ -13,4 +13,4 @@ dependencyResolutionManagement {
     }
 }
 rootProject.name = "FireTV IPTV"
-include ':app', ':warpvpn'
+include ':app', ':warpvpn', ':tvlauncher'

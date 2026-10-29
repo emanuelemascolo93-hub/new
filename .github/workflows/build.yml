@@ -42,6 +42,9 @@ jobs:
           if [ -f warpvpn/build/outputs/apk/release/warpvpn-release.apk ]; then
             cp warpvpn/build/outputs/apk/release/warpvpn-release.apk out/WarpVPN.apk
           fi
+          if [ -f tvlauncher/build/outputs/apk/release/tvlauncher-release.apk ]; then
+            cp tvlauncher/build/outputs/apk/release/tvlauncher-release.apk out/EmmewebTV.apk
+          fi
           cd out
           git init -q -b builds
           git config user.name "github-actions"

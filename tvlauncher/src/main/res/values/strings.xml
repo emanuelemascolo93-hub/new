@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">EMMEWEB TV</string>
+    <string name="acc_desc">Apre EMMEWEB TV quando premi il tasto Home del telecomando.</string>
+    <string name="row_fav">Preferiti</string>
+    <string name="row_apps">Tutte le app</string>
+    <string name="row_sys">TV</string>
+</resources>
